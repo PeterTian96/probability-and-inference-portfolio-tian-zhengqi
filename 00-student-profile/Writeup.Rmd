@@ -8,3 +8,10 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+**Getting to know Mubarak Ganiyu**
+Mubarak Ganiyu is from Lagos, Nigeria. 
+
+He got into data science as he loves tinkering with numbers. Having solved numerous statistical problems using the pen-and-paper approach, platforms like R and python made it possible to handle big data and extract crucial information from them.
+
+Mubarak Ganiyu favorite movie is Inglourious basterds.
