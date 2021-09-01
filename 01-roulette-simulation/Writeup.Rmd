@@ -1,0 +1,8 @@
+---
+title: "writeup"
+author: "Zhengqi Tian"
+date: "9/1/2021"
+output: 
+  github_document: default
+  html_document: default
+---
