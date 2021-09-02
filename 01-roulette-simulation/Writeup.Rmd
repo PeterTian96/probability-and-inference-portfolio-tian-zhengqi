@@ -3,9 +3,8 @@ title: "Martingale Strategy Computer Simulation"
 author: "Zhengqi(Peter) Tian"
 date: "9/1/2021"
 output:
-  html_document: default
   github_document: default
-
+  html_document: default
 ---
 Reference: https://github.com/thomasgstewart/data-science-5620-Fall-2021/blob/master/deliverables/01-roulette.md
 
