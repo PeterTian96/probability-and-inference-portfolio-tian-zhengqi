@@ -114,4 +114,39 @@ mean(walk_out_money - 200)
 
 
 ```
+```{r}
+# Simulation
+walk_out_money <- rep(NA, 10000)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 500, W = 600, L = 1000, M = 10) %>% get_last
+}
+
+# Walk out money distribution
+hist(walk_out_money, breaks = 100)
+
+# Estimated probability of walking out with extra cash
+mean(walk_out_money > 500)
+
+# Estimated earnings
+mean(walk_out_money - 600)
+
+```
+
+```{r}
+# Simulation
+walk_out_money <- rep(NA, 10000)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 300, L = 500, M = 100) %>% get_last
+}
+
+# Walk out money distribution
+hist(walk_out_money, breaks = 100)
+
+# Estimated probability of walking out with extra cash
+mean(walk_out_money > 200)
+
+# Estimated earnings
+mean(walk_out_money - 200)
+```
+
 

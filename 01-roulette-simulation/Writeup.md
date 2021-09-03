@@ -42,7 +42,7 @@ have three stopping rules:
        # four Parameters
       |***Parameter*** |***Description***                 | ***Starting value***
       |----------------|--------------------------------- | --------------------
-      |B               |Starting budge                    | $200
+      |B               |Starting budget                   | $200
       |W               |Maximum wager                     | $300 (Starting budget + $100 winnings)
       |L               |Maximum number of plays           | 1000 plays
       |M               |Winning threshold for stopping    | $100     
@@ -257,12 +257,10 @@ have two codes solutions.
         }
         
 
-\#\# See the stopping rule below. Explain to your audience how you used
+\#\#See the stopping rule below. Explain to your audience how you used
 computer simulation to estimate the *average number of plays before
 stopping*. The code below will need to be modified to calculate this
 quantity.
-
-=============
 
  ***Stop Rules Function and Application***  
 <p>
@@ -301,10 +299,10 @@ from infinite. based on the parameter, we have three parameter.
   With the stopping rule, the one series function will be work
 functional.Furthermore, thus we know when to stop, we can also estimate
 the average number of plays before stopping.To find this, the first is
-to find how to count the number of one seres play. Thus we can find the
+to find how to count the number of one series play. Thus we can find the
 game index in the ledger, we could count the ledger game index row to
 find the total number. Do not forget, the ledger includes N/A for the
-initial set. We need to romve the row before count. Finally I can have a
+initial set. We need to rmove the row before count. Finally I can have a
 codes:
 </p>
 
@@ -313,11 +311,11 @@ codes:
       as.numeric(count(na.omit(ledger,"game_index")))
 
 <p>
- Now, waht we let need is to create a stimulation so that 1000 players
-can play now.
+ Now, what we need is to create a stimulation so that 1000 players can
+play now.
 </p>
 
-      running_time <- rep(NA, 100)
+      running_time <- rep(NA, 1000)
       for(i in seq_along(running_time)){
       ledger <- one_series(200,200,300,500)   
       running_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
@@ -326,10 +324,23 @@ can play now.
 <p>
   This loop allow us have a data set include 1000 plays’ runing times.
 To get the estimate avage ruing time, We can use mean function to find
-the avagere number:
+the average number:
 </p>
 
       mean(running_time)
+
+<p>
+  Based on the simulation, we can estimate that the average number of
+plays before stopping will be 155.49.
+</p>
+
+\#\#You should explain how you used computer simulation to calculate the
+average earnings of a gambler that uses this strategy. As part of the
+explanation, provide a figure (or a series of figures) that show how the
+gamblers earnings (or losses) evolve over a series of wagers at the
+roulette wheel. (The x-axis will be the wager number (or play number),
+the y-axis will be earnings.) The code below provides all the functions
+you’ll need to calculate average earnings.
 
  ***Simulation for Earning and Loss***
 <p>
@@ -400,7 +411,7 @@ calculate the net earning, we can use profit(l2). Here l2 is the ledger
 We can get:\[1\] -100
 </p>
 <p>
-Simple sample could not decide everything, we need to calculate the
+ Simple sample could not decide everything, we need to calculate the
 average earning of a gambler that uses this strayegy to do determine if
 it works. Thus we need a simulation function to repeat the games to get
 the answer. First, we need a simulation function:
@@ -413,7 +424,7 @@ the answer. First, we need a simulation function:
       }
 
 <p>
-In the function we need the finial walk\_out\_money test rep for 10000
+ In the function we need the finial walk\_out\_money test rep for 10000
 time. for each time we follow the one\_series function. As the answer
 will be stored in data set j. Now the find the average earning in 10000
 times, we just need to calculate the mean of the data set j.
@@ -424,11 +435,11 @@ times, we just need to calculate the mean of the data set j.
 
 <p>
 
-Based on the parameter, the computer simulate the average earning of a
+ Based on the parameter, the computer simulate the average earning of a
 gambler that uses this strategy will be -47.25 based on 10000 players
 
 <p>
-As the walk ou money is only 0, bankruptcy, or 100, maximum, we can
+ As the walk ou money is only 0, bankruptcy, or 100, maximum, we can
 estimated probability of walking out with extra cash:
 </p>
 
@@ -437,15 +448,70 @@ estimated probability of walking out with extra cash:
 
 <p>
 
-Based on the parameter, the computer simulate the estimated probability
+ Based on the parameter, the computer simulate the estimated probability
 of walking out with extra that uses this strategy will be 0.5154 based
 on 10000 players
 
-## You should explain how you used computer simulation to calculate the average earnings of a gambler that uses this strategy. As part of the explanation, provide a figure (or a series of figures) that show how the gamblers earnings (or losses) evolve over a series of wagers at the roulette wheel. (The x-axis will be the wager number (or play number), the y-axis will be earnings.) The code below provides all the functions you’ll need to calculate average earnings.
-
- ***Average earning impact based on a changing parameter***
-
 ## Show your audience how changing a parameter of the simulation (see table below) does or does not have an impact on average earnings. A figure would be helpful.
+
+***Average earning impact based on a changing parameter***  
+<p>
+
+ Changing a parameter will change the simulation solution. As we set the
+one series player function, and stop running function, parameter are
+critical element. For the following scenario, we change the staring
+budet from $200 to $100
+
+\# four Parameters \|***Parameter*** \|***Description*** \| ***Starting
+value*** \|—————-\|——————————— \| ——————– \|B \|Starting budget \| $500
+\|W \|Maximum wager \| $600 (Starting budget + $100 winnings) \|L
+\|Maximum number of plays \| 1000 plays \|M \|Winning threshold for
+stopping \| $100
+
+<p>
+&emsp The simulation function will look like this:
+<p>
+
+# Simulation
+
+walk\_out\_money &lt;- rep(NA, 10000) for(j in
+seq\_along(walk\_out\_money)){ walk\_out\_money\[j\] &lt;- one\_series(B
+= 500, W = 600, L = 1000, M = 100) %&gt;% get\_last }
+
+# Estimated probability of walking out with extra cash
+
+mean(walk\_out\_money &gt; 200) \# Estimated earnings
+mean(walk\_out\_money - 200)
+<p>
+&ems Base on the function, We can find that for 1000 plays, the
+estimated probability of walking out with extra cash will be zero, and
+Estimated earnings will decrease to 131.92. We will conclude that the
+martingale strategy does not work.
+</p>
+<p>
+However, If we change maximum number of plays from 1000 to 500, such
+parameter change will not effect the solution. As the pervious mention,
+the average number of plays before stopping will be 155.49. Lets applie
+code to verify the hypothesis.
+</p>
+
+# Simulation
+
+walk\_out\_money &lt;- rep(NA, 10000) for(j in
+seq\_along(walk\_out\_money)){ walk\_out\_money\[j\] &lt;- one\_series(B
+= 200, W = 300, L = 500, M = 100) %&gt;% get\_last }
+
+# Walk out money distribution
+
+hist(walk\_out\_money, breaks = 100)
+
+# Estimated probability of walking out with extra cash
+
+mean(walk\_out\_money &gt; 200)
+
+# Estimated earnings
+
+mean(walk\_out\_money - 200)
 
 ## Be sure to explain the limitations of the simulation; identify simplifications or other sources of uncertainty.
 
