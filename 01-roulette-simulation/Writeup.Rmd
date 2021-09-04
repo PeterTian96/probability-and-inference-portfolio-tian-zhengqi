@@ -382,7 +382,7 @@ as.numeric(count(na.omit(ledger,"game_index")))
     dev.off()
 <p>&emsp; The visible graph is here:</p>
   
-   ![](winner.svg)
+![](winner.svg)
 <p>&emsp;In the graph, the total game index is way more than 190. This time, the player has a good luck. We can have a up forward trend here. the strategy works once the player has a large amount of win in each sub-sequence. While several loss-weighted sub-sequence happened, the player still have have enough ending budget to afford the double wager for next time.</p>
 
 <p>&emsp;As the player stops running times with maximum wager, the profit here is $100.
