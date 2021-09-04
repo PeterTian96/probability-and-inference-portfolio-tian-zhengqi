@@ -371,7 +371,7 @@ profit(ledger)
 as.numeric(count(na.omit(ledger,"game_index")))
 
 ```
-
+g
 <p>&emsp;With following code, we could stimulate a loser solution. Here is the code: </p>
 
     vg(filename = "winner.svg", width=16, height =9)

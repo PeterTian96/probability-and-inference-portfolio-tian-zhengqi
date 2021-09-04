@@ -526,6 +526,7 @@ as.numeric(count(na.omit(ledger,"game_index")))
 
     ## [1] 25
 
+g
 <p>
  With following code, we could stimulate a loser solution. Here is the
 code:
