@@ -3,10 +3,10 @@ title: "Martingale Strategy Computer Simulation"
 author: "Zhengqi(Peter) Tian"
 date: "9/1/2021"
 output:
-  html_document: 
-     code_folding: hide
   
   github_document: default
+  html_document: 
+     code_folding: hide
 ---
 Reference: https://github.com/thomasgstewart/data-science-5620-Fall-2021/blob/master/deliverables/01-roulette.md
 
@@ -133,7 +133,7 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
       possible_outcomes <- c(rep("red",18), rep("black",18), rep("green",2))
       sample(possible_outcomes, 1)
       }
-<p>&emsp;The code allow us to receive a random spin result as the red probability is 18 out of 38.</p>
+<p>&emsp;The code allow us to receive a random spin result as the red probability is 18 out of 38.
 
 &ensp;***Simulation Function for Martingale Wager Rule***
 <p>&emsp;The Next task is to consider the stimulation of martingale wager rule. To complete the whole procedures, we need find the  previous outcome. If the previous outcome negative, we need to know previous wager, max wager, and current budget as well. Then, we are able to calculate martingale wager. For martingale wager, if the outcome is <font  color=Red>"Red"</font>, the wager will be one, otherwise it will be the minimum amount between twice of the previous wage, max wage, and the current budget. Here, we have two codes solutions:</p>
@@ -215,10 +215,9 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
         ifelse(out[1, "outcome"] == "red", +1, -1)*out[1, "wager"]
         return(out)
         }
-<p>&emsp;The first code solutions is a stimulation function combination of the previous three parts. The second code solution demonstrates the whole idea of ledger, representing the reflection of one play </p>
+<p>&emsp;The first code solutions is a stimulation function combination of the previous three parts. The second code solution demonstrates the whole idea of ledger, representing the reflection of one play 
 
 <p>&ensp;***Series of Plays Simulation***   
- 
 <p>&emsp;To get the sequence of plays, we need to simulate series of plays. Generally, it is duplicated plays based one one-play simulation. But, the initial play has some differences. First, to mimic the round 1 correctly, we needs setup the game 0 as the initial play. Then, we will apply For loop function, allowing the computer simulate tons of play round until the play meet stop rules, which we will talk later. Here we have two codes solutions.</p>
         one_series <- function(
         B = 200
@@ -501,9 +500,9 @@ mean(walk_out_money > 200)
 
 
 ***Average earning impact based on a changing parameter***  
-<p>&emsp;Changing a parameter will change the simulation solution. As we set the one series player function, and stop running function, parameter are critical element. For the following scenario, we change the staring budget from $200 to $100</p>
+<p>&emsp;Changing a parameter will change the simulation solution. As we set the one series player function, and stop running function, parameter are critical element. For the following scenario, we change the staring budget from $200 to $100
 
-# four Parameters
+# Four Parameters
 |***Parameter*** |***Description***                 | ***Starting value***
 |----------------|--------------------------------- | --------------------
 |B               |Starting budget                   | $500

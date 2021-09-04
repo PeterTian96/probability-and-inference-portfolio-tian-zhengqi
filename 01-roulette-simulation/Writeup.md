@@ -6,7 +6,116 @@ Zhengqi(Peter) Tian
 Reference:
 <https://github.com/thomasgstewart/data-science-5620-Fall-2021/blob/master/deliverables/01-roulette.md>
 
-***Background and Operating Characters***
+``` r
+single_spin <- function(){
+  possible_outcomes <- c(rep("red",18), rep("black",18), rep("green",2))
+  sample(possible_outcomes, 1)
+}
+
+
+martingale_wager <- function(
+  previous_wager
+  , previous_outcome
+  , max_wager
+  , current_budget
+){
+  if(previous_outcome == "red") return(1)
+  min(2*previous_wager, max_wager, current_budget)
+}
+
+one_play <- function(previous_ledger_entry, max_wager){
+  # Create a copy of the input object that will become the output object
+  out <- previous_ledger_entry
+  out[1, "game_index"] <- previous_ledger_entry[1, "game_index"] + 1
+  out[1, "starting_budget"] <- previous_ledger_entry[1, "ending_budget"]
+  out[1, "wager"] <- martingale_wager(
+    previous_wager = previous_ledger_entry[1, "wager"]
+    , previous_outcome = previous_ledger_entry[1, "outcome"]
+    , max_wager = max_wager
+    , current_budget = out[1, "starting_budget"]
+  )
+  out[1, "outcome"] <- single_spin()
+  out[1, "ending_budget"] <- out[1, "starting_budget"] + 
+    ifelse(out[1, "outcome"] == "red", +1, -1)*out[1, "wager"]
+  return(out)
+}
+
+one_series <- function(
+  max_games, starting_budget, winning_threshold, max_wager
+){
+  # Initialize ledger
+  ledger <- data.frame(
+      game_index = 0:max_games
+    , starting_budget = NA_integer_
+    , wager = NA_integer_
+    , outcome = NA_character_
+    , ending_budget = NA_integer_
+  )
+  ledger[1, "wager"] <- 1
+  ledger[1, "outcome"] <- "red"
+  ledger[1, "ending_budget"] <- starting_budget
+  for(i in 2:nrow(ledger)){
+    #browser()
+    ledger[i,] <- one_play(ledger[i-1,], max_wager)
+    if(stopping_rule(ledger[i,], winning_threshold)) break
+  }
+  # Return non-empty portion of ledger
+  ledger[2:i, ]
+}
+
+stopping_rule <- function(
+  ledger_entry
+  , winning_threshold
+){
+  ending_budget <- ledger_entry[1, "ending_budget"]
+  if(ending_budget <= 0) return(TRUE)
+  if(ending_budget >= winning_threshold) return(TRUE)
+  FALSE
+}
+
+profit <- function(ledger){
+  n <- nrow(ledger)
+  profit <- ledger[n, "ending_budget"] - ledger[1, "starting_budget"]
+  return(profit)
+}
+require(magrittr)
+```
+
+    ## Loading required package: magrittr
+
+``` r
+require (dplyr)
+```
+
+    ## Loading required package: dplyr
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
+svg(filename = "loser.svg", width=16, height =9)
+par(cex.axis=2, cex.lab = 2, mar = c(8,8,2,2), bg = rgb(222, 235, 247, max = 255))
+set.seed(1)
+ledger <- one_series(200,200,300,500)
+plot(ledger[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
+
+
+svg(filename = "winner.svg", width=16, height =9)
+par(cex.axis=2, cex.lab = 2, mar = c(8,8,2,2), bg = rgb(222, 235, 247, max = 255))
+set.seed(2)
+l2 <- one_series(200,200,300,500)
+plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
+```
+
+***Introduction***
 <p>
  As the purpose of the article, We try to use data science tech to
 analyze a class roulette strategy, Martingale strategy. As we known that
@@ -18,6 +127,7 @@ not only offset the previous lost, but also will earn 1 dollar. To know
 whether it will work, as a data scientist,applying computer simulation
 will help us understand the scenario.
 </p>
+***Background and Operating Characters***
 <p>
  To explain how the computer does simulation, first of all, we need
 think over key features in the whole procedure by understating the
@@ -48,7 +158,7 @@ have three stopping rules:
       |M               |Winning threshold for stopping    | $100     
       
 
-***Simulation Explanations***  
+***Simulation Methods***  
  ***Simulation Function for Spin of the Wheel***
 <p>
  Now, we could start the computer simulation step by step. First, the
@@ -67,9 +177,10 @@ the wheel, as we apply the following code:
       }
 
 <p>
+
  The code allow us to receive a random spin result as the red
 probability is 18 out of 38.
-</p>
+
  ***Simulation Function for Martingale Wager Rule***
 <p>
  The Next task is to consider the stimulation of martingale wager rule.
@@ -180,21 +291,20 @@ two codes responses:
         }
 
 <p>
+
  The first code solutions is a stimulation function combination of the
 previous three parts. The second code solution demonstrates the whole
 idea of ledger, representing the reflection of one play
-</p>
-<p>
-
- ***Series of Plays Function***
 
 <p>
- For get the sequence of plays, we need to simulate series of plays.
+ ***Series of Plays Simulation***  
+<p>
+ To get the sequence of plays, we need to simulate series of plays.
 Generally, it is duplicated plays based one one-play simulation. But,
 the initial play has some differences. First, to mimic the round 1
 correctly, we needs setup the game 0 as the initial play. Then, we will
 apply For loop function, allowing the computer simulate tons of play
-round until the play meet stop rules, which we wile talk later. Here we
+round until the play meet stop rules, which we will talk later. Here we
 have two codes solutions.
 </p>
 
@@ -255,14 +365,8 @@ have two codes solutions.
         # Return non-empty portion of ledger
         ledger[2:i, ]
         }
-        
 
-\#\#See the stopping rule below. Explain to your audience how you used
-computer simulation to estimate the *average number of plays before
-stopping*. The code below will need to be modified to calculate this
-quantity.
-
- ***Stop Rules Function and Application***  
+ ***Stop Rules Function and Average Number of Plays before Stopping***  
 <p>
   While the one\_series function has give us a clear function to achieve
 the ledger. but we sill need to setup a stop rules to finish one series
@@ -274,7 +378,7 @@ from infinite. based on the parameter, we have three parameter.
       - bankruptcy
 
 <p>
- Thus we can have two code solutions here:
+ Thus, we can have two code solutions here:
 </p>
 
       # Stopping rule
@@ -296,13 +400,13 @@ from infinite. based on the parameter, we have three parameter.
       }
 
 <p>
-  With the stopping rule, the one series function will be work
-functional.Furthermore, thus we know when to stop, we can also estimate
-the average number of plays before stopping.To find this, the first is
-to find how to count the number of one series play. Thus we can find the
-game index in the ledger, we could count the ledger game index row to
-find the total number. Do not forget, the ledger includes N/A for the
-initial set. We need to rmove the row before count. Finally I can have a
+  With the stop rule function, the one series function will work
+functional.Furthermore, knowing when to stop, we can estimate the
+average number of plays before stopping. The first step is to find how
+to count the number of one series play. Thus, we can find the game index
+in the ledger, counting the ledger game index row to find the total
+number. Do not forget, the ledger includes N/A as the initial geame
+index. We need to remove the row before count. Finally I can have a
 codes:
 </p>
 
@@ -320,6 +424,9 @@ play now.
       ledger <- one_series(200,200,300,500)   
       running_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
       }
+      
+      
+      
 
 <p>
   This loop allow us have a data set include 1000 plays’ runing times.
@@ -331,8 +438,22 @@ the average number:
 
 <p>
   Based on the simulation, we can estimate that the average number of
-plays before stopping will be 155.49.
+plays before stopping will be:
 </p>
+
+``` r
+#average number of plays before stopping
+
+runing_time <- rep(NA, 1000)
+for(i in seq_along(runing_time)){
+ledger <- one_series(200,200,300,500)
+runing_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
+}
+
+mean(runing_time)
+```
+
+    ## [1] 156.862
 
 \#\#You should explain how you used computer simulation to calculate the
 average earnings of a gambler that uses this strategy. As part of the
@@ -372,22 +493,42 @@ whole simulation! here is the function code:
         profit(ledger)
 
 <p>
- With the code, we may stimulate the loser solution. Here is the graph
+ With the code, we may stimulate the loser solution. Here is the graph:
 </p>
 
-        ![avatar](loser.svg)
+![](loser.svg)
 
 <p>
- In the graph, the total game index is over 70. While, most of the tine,
-the player has a steady,but, with the bad luck, the game trend goes
-downside the strategy works in some way, but once the player have a
-large amount of loss in each sub-sequence, the player havs no budget to
-double the previous wager for the next round. To calulate the net
-earning, we can use profit(ledger). We can get:\[1\] -200
+ In the graph, the total game index is 73. While, most of the tine, the
+player has a steady,but, with the bad luck, the game trend goes downside
+the strategy works in some way, but once the player have a large amount
+of loss in each sub-sequence, the player havs no budget to double the
+previous wager for the next round.
 </p>
 <p>
- With following code, we could stimulate the loser solution. Here is the
-Code
+ To calulate the net earning, we can use profit(ledger). We can get:
+</p>
+
+``` r
+profit(ledger)
+```
+
+    ## [1] -200
+
+<p>
+ To get the total running times before stop, we can
+useas.numeric(count(na.omit(ledger,“game\_index”))). we get:
+</p>
+
+``` r
+as.numeric(count(na.omit(ledger,"game_index")))
+```
+
+    ## [1] 25
+
+<p>
+ With following code, we could stimulate a loser solution. Here is the
+code:
 </p>
 
     vg(filename = "winner.svg", width=16, height =9)
@@ -402,14 +543,29 @@ Code
 </p>
 ![](winner.svg)
 <p>
- In the graph, the total game index is way more than 150. This time, the
-player has a god luck. We can see that in trend is forward, the strategy
-works once the player has a large amount of win in each sub-sequence.
-While several loss-weighted sub-sequence happened, the player still have
-have enough ending budget to afford the double wager for next time.To
-calculate the net earning, we can use profit(l2). Here l2 is the ledger
-We can get:\[1\] -100
+ In the graph, the total game index is way more than 190. This time, the
+player has a good luck. We can have a up forward trend here. the
+strategy works once the player has a large amount of win in each
+sub-sequence. While several loss-weighted sub-sequence happened, the
+player still have have enough ending budget to afford the double wager
+for next time.
 </p>
+<p>
+
+ As the player stops running times with maximum wager, the profit here
+is $100.
+
+<p>
+ To get the total running times before stop, we can
+useas.numeric(count(na.omit(l2,“game\_index”))). we get:
+</p>
+
+``` r
+as.numeric(count(na.omit(l2,"game_index")))
+```
+
+    ## [1] 190
+
 <p>
  Simple sample could not decide everything, we need to calculate the
 average earning of a gambler that uses this strayegy to do determine if
@@ -432,27 +588,117 @@ times, we just need to calculate the mean of the data set j.
 
       # Estimated earnings
         mean(walk_out_money - 200)
+        
 
 <p>
 
  Based on the parameter, the computer simulate the average earning of a
-gambler that uses this strategy will be -47.25 based on 10000 players
+gambler based on 10000 players:
+
+``` r
+# Simulation
+one_play <- function(state){
+  
+    # Wager
+    proposed_wager <- ifelse(state$previous_win, 1, 2*state$previous_wager)
+    wager <- min(proposed_wager, state$M, state$B)
+    
+    # Spin of the wheel
+    red <- rbinom(1,1,18/38)
+    
+    # Update state
+    state$plays <- state$plays + 1
+    state$previous_wager <- wager
+    if(red){
+      # WIN
+      state$B <- state$B + wager
+      state$previous_win <- TRUE
+    }else{
+      # LOSE
+      state$B <- state$B - wager
+      state$previous_win <- FALSE
+    }
+  state
+}
+
+
+stop_play <- function(state){
+  if(state$B <= 0) return(TRUE)
+  if(state$plays >= state$L) return(TRUE)
+  if(state$B >= state$W) return(TRUE)
+  FALSE
+}
+
+
+one_series <- function(
+    B = 200
+  , W = 300
+  , L = 1000
+  , M = 100
+){
+
+  # initial state
+  state <- list(
+    B = B
+  , W = W
+  , L = L
+  , M = M
+  , plays = 0
+  , previous_wager = 0
+  , previous_win = TRUE
+  )
+  
+  # vector to store budget over series of plays
+  budget <- rep(NA, L)
+  
+  # For loop of plays
+  for(i in 1:L){
+    new_state <- state %>% one_play
+    budget[i] <- new_state$B
+    if(new_state %>% stop_play){
+      return(budget[1:i])
+    }
+    state <- new_state
+  }
+  budget    
+}
+
+# helper function
+get_last <- function(x) x[length(x)] 
+walk_out_money <- rep(NA, 10000)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 300, L = 1000, M = 100) %>% get_last
+}
+
+# Estimated earnings
+mean(walk_out_money - 200)
+```
+
+    ## [1] -44.9347
 
 <p>
- As the walk ou money is only 0, bankruptcy, or 100, maximum, we can
-estimated probability of walking out with extra cash:
+  Here is the related distribution.
 </p>
 
-    #estimated probability of walking out with extra
-    mean(walk_out_money > 200)
+``` r
+# Walk out money distribution
+hist(walk_out_money, breaks = 100)
+```
+
+![](Writeup_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 <p>
+ As the walk ou money is only 0, bankruptcy, or 100, maximum, the
+computer simulate the estimated probability of walking out with extra
+cash will be:
+</p>
 
- Based on the parameter, the computer simulate the estimated probability
-of walking out with extra that uses this strategy will be 0.5154 based
-on 10000 players
+``` r
+# Estimated earnings
+mean(walk_out_money > 200)
+```
 
-## Show your audience how changing a parameter of the simulation (see table below) does or does not have an impact on average earnings. A figure would be helpful.
+    ## [1] 0.5169
 
 ***Average earning impact based on a changing parameter***  
 <p>
@@ -460,59 +706,228 @@ on 10000 players
  Changing a parameter will change the simulation solution. As we set the
 one series player function, and stop running function, parameter are
 critical element. For the following scenario, we change the staring
-budet from $200 to $100
+budget from $200 to $100
 
-\# four Parameters \|***Parameter*** \|***Description*** \| ***Starting
-value*** \|—————-\|——————————— \| ——————– \|B \|Starting budget \| $500
-\|W \|Maximum wager \| $600 (Starting budget + $100 winnings) \|L
-\|Maximum number of plays \| 1000 plays \|M \|Winning threshold for
-stopping \| $100
+# Four Parameters
+
+| ***Parameter*** | ***Description***              | ***Starting value***                   |
+|-----------------|--------------------------------|----------------------------------------|
+| B               | Starting budget                | $500                                   |
+| W               | Maximum wager                  | $600 (Starting budget + $100 winnings) |
+| L               | Maximum number of plays        | 1000 plays                             |
+| M               | Winning threshold for stopping | $100                                   |
 
 <p>
-&emsp The simulation function will look like this:
-<p>
-
-# Simulation
-
-walk\_out\_money &lt;- rep(NA, 10000) for(j in
-seq\_along(walk\_out\_money)){ walk\_out\_money\[j\] &lt;- one\_series(B
-= 500, W = 600, L = 1000, M = 100) %&gt;% get\_last }
-
-# Estimated probability of walking out with extra cash
-
-mean(walk\_out\_money &gt; 200) \# Estimated earnings
-mean(walk\_out\_money - 200)
-<p>
-&ems Base on the function, We can find that for 1000 plays, the
-estimated probability of walking out with extra cash will be zero, and
-Estimated earnings will decrease to 131.92. We will conclude that the
-martingale strategy does not work.
-</p>
-<p>
-However, If we change maximum number of plays from 1000 to 500, such
-parameter change will not effect the solution. As the pervious mention,
-the average number of plays before stopping will be 155.49. Lets applie
-code to verify the hypothesis.
+  The simulation function will look like this:
 </p>
 
-# Simulation
+      # Simulation
+      walk_out_money <- rep(NA, 10000)
+      for(j in seq_along(walk_out_money)){
+      walk_out_money[j] <- one_series(B = 500, W = 600, L = 1000, M = 100) %>% get_last
+      }
 
-walk\_out\_money &lt;- rep(NA, 10000) for(j in
-seq\_along(walk\_out\_money)){ walk\_out\_money\[j\] &lt;- one\_series(B
-= 200, W = 300, L = 500, M = 100) %&gt;% get\_last }
+``` r
+ # Simulation
+      walk_out_money <- rep(NA, 10000)
+      for(j in seq_along(walk_out_money)){
+      walk_out_money[j] <- one_series(B = 500, W = 600, L = 1000, M = 100) %>% get_last
+      }
+```
 
+<p>
+  For estimated earnings, we can use mean(walk\_out\_money - 600), to
+get:
+</p>
+
+``` r
+mean(walk_out_money - 600)
+```
+
+    ## [1] -200.2726
+
+<p>
+ We can also have the distribution here:
+</p>
+
+``` r
 # Walk out money distribution
+hist(walk_out_money, breaks = 100)
+```
 
-hist(walk\_out\_money, breaks = 100)
+![](Writeup_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-# Estimated probability of walking out with extra cash
+<p>
+  For estimated probability of walking out with extra cash, we can use
+mean(walk\_out\_money &gt; 600), to get:
+</p>
 
-mean(walk\_out\_money &gt; 200)
+``` r
+mean(walk_out_money > 500)
+```
 
-# Estimated earnings
+    ## [1] 0.6274
 
-mean(walk\_out\_money - 200)
+<p>
+  Base on the function, We can find required propety for 10000 plays,
+the estimated probability of walking out with extra cash will be
+decrease, and Estimated earnings will decrease. We can find that change
+in starting budget will not change the generail trend, but the esimiate
+earning and probability of taking cash out will go down in this
+scenario.
+</p>
+<p>
+we can also change maximum number of plays from 1000 to 500. Here is the
+stimulation code to verify the hypothesis:
+</p>
 
-## Be sure to explain the limitations of the simulation; identify simplifications or other sources of uncertainty.
+      # Simulation
+      walk_out_money <- rep(NA, 10000)
+      for(j in seq_along(walk_out_money)){
+      walk_out_money[j] <- one_series(B = 200, W = 300, L = 500, M = 100) %>% get_last
+      }
+      # Estimated earnings
+      mean(walk_out_money - 600)
+
+``` r
+one_play <- function(state){
+  
+    # Wager
+    proposed_wager <- ifelse(state$previous_win, 1, 2*state$previous_wager)
+    wager <- min(proposed_wager, state$M, state$B)
+    
+    # Spin of the wheel
+    red <- rbinom(1,1,18/38)
+    
+    # Update state
+    state$plays <- state$plays + 1
+    state$previous_wager <- wager
+    if(red){
+      # WIN
+      state$B <- state$B + wager
+      state$previous_win <- TRUE
+    }else{
+      # LOSE
+      state$B <- state$B - wager
+      state$previous_win <- FALSE
+    }
+  state
+}
+
+
+stop_play <- function(state){
+  if(state$B <= 0) return(TRUE)
+  if(state$plays >= state$L) return(TRUE)
+  if(state$B >= state$W) return(TRUE)
+  FALSE
+}
+
+
+one_series <- function(
+    B = 200
+  , W = 300
+  , L = 1000
+  , M = 100
+){
+
+  # initial state
+  state <- list(
+    B = B
+  , W = W
+  , L = L
+  , M = M
+  , plays = 0
+  , previous_wager = 0
+  , previous_win = TRUE
+  )
+  
+  # vector to store budget over series of plays
+  budget <- rep(NA, L)
+  
+  # For loop of plays
+  for(i in 1:L){
+    new_state <- state %>% one_play
+    budget[i] <- new_state$B
+    if(new_state %>% stop_play){
+      return(budget[1:i])
+    }
+    state <- new_state
+  }
+  budget    
+}
+
+# helper function
+get_last <- function(x) x[length(x)]  
+walk_out_money <- rep(NA, 100)
+      for(j in seq_along(walk_out_money)){
+      walk_out_money[j] <- one_series(B = 200, W = 300, L = 500, M = 100) %>% get_last
+      }
+```
+
+<p>
+  For estimated earnings, we can use mean(walk\_out\_money - 600), to
+get:
+</p>
+
+``` r
+mean(walk_out_money - 300)
+```
+
+    ## [1] -143.68
+
+<p>
+ We can also have the distributioN here:
+</p>
+
+``` r
+# Walk out money distribution
+hist(walk_out_money, breaks = 100)
+```
+
+![](Writeup_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+<p>
+  For estimated probability of walking out with extra cash, we can use
+mean(walk\_out\_money &gt; 600), to get:
+</p>
+
+``` r
+mean(walk_out_money > 200)
+```
+
+    ## [1] 0.53
+
+<p>
+  Based on the simulation solutiont, we could find that few maximum
+running time will decrease the probraility of take extra money
+dramatically. An the average earning is still negative.
+</p>
 
  ***limitations of the simulation***
+
+<p>
+  Based on the simulation, the average of the profit earning is
+negative. While the player could have around 0.6 probability in taking
+money out, the simulation is based on the 1000 maximum running times.
+shorten then running time will increase chance to bankruptcy and decrese
+probability in taking extra money out. However, we cannot simply
+conclude that the strategy does not work because of the simulation
+limitation. Let’s go back to the sequence. If the player facing a bad
+luck, one will have more losses than wins in the sequence. While the
+player will keep wait th last win to cover all the lost has happened in
+sub sequence, the player can simply stop play after the final win in
+sequence happened and take any profit remaining. In the previous lose
+and win scenarios, the player has a steady lucky vibe, but the reality
+may not be same. the player can have have good luck and bad luck in the
+same game. After experience some bad luck, if the player still has a
+high budget, one will keep play since double previous wage does not cost
+much. But if the player still has tiny profit after the one experience a
+long time wait for win, the player can just stop play and take the
+renaming balance.
+</P>
+<p>
+
+ Additionally, the simulation is based on a replicate one series play.
+But how does a gambler calculate one night win? Maybe, the player will
+sum up all plays at one night. As the probability in take extra money is
+higher than 0.5, the player will have chance to apply the strategy to
+win moore plays and cover the loss plays./P&gt;
