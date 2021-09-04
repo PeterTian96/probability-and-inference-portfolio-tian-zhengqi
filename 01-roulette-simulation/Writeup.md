@@ -526,7 +526,6 @@ as.numeric(count(na.omit(ledger,"game_index")))
 
     ## [1] 25
 
-g
 <p>
  With following code, we could stimulate a loser solution. Here is the
 code:
@@ -540,8 +539,9 @@ code:
     dev.off()
 
 <p>
+
   The visible graph is here:
-</p>
+
 ![](winner.svg)
 <p>
  In the graph, the total game index is way more than 190. This time, the

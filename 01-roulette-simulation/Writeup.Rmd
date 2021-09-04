@@ -371,7 +371,7 @@ profit(ledger)
 as.numeric(count(na.omit(ledger,"game_index")))
 
 ```
-g
+
 <p>&emsp;With following code, we could stimulate a loser solution. Here is the code: </p>
 
     vg(filename = "winner.svg", width=16, height =9)
@@ -380,7 +380,7 @@ g
     l2 <- one_series(200,200,300,500)
     plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
     dev.off()
-<p>&emsp; The visible graph is here:</p>
+<p>&emsp; The visible graph is here:
   
 ![](winner.svg)
 <p>&emsp;In the graph, the total game index is way more than 190. This time, the player has a good luck. We can have a up forward trend here. the strategy works once the player has a large amount of win in each sub-sequence. While several loss-weighted sub-sequence happened, the player still have have enough ending budget to afford the double wager for next time.</p>
