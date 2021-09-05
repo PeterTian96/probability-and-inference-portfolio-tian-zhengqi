@@ -117,15 +117,15 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
 
 ***Introduction***
 <p>
- As the purpose of the article, We try to use data science tech to
-analyze a class roulette strategy, Martingale strategy. As we known that
-a roulette table composed of 38 (or 37) evenly sized pockets on a wheel,
+ As the purpose of the article, We try to use data science to analyze a
+classic roulette strategy, Martingale Strategy. As we known that a
+roulette table composed of 38 (or 37) evenly sized pockets on a wheel,
 including red, black, or green pockets. The payout for a bet on black is
 1 dollar for each wagered. Generally, for each sub sequence, no matter
 how many losses happened before the final red win, the win wager will
 not only offset the previous lost, but also will earn 1 dollar. To know
-whether it will work, as a data scientist,applying computer simulation
-will help us understand the scenario.
+whether it will work, as data scientists, we will apply computer
+simulation will help us understand the scenario.
 </p>
 ***Background and Operating Characters***
 <p>
@@ -188,9 +188,9 @@ To complete the whole procedures, we need find the previous outcome. If
 the previous outcome negative, we need to know previous wager, max
 wager, and current budget as well. Then, we are able to calculate
 martingale wager. For martingale wager, if the outcome is
-<font  color=Red>“Red”</font>, the wager will be one, otherwise it will
-be the minimum amount between twice of the previous wage, max wage, and
-the current budget. Here, we have two codes solutions:
+<font  color=Red>“Red”</font>, the wager will be one dollar. Otherwise,
+it will be a minimum amount between twice of the previous wage, max
+wage, and the current budget. Here, we have two codes solutions:
 </p>
 
       # The Single Martingale Wager
@@ -294,9 +294,8 @@ two codes responses:
 
  The first code solutions is a stimulation function combination of the
 previous three parts. The second code solution demonstrates the whole
-idea of ledger, representing the reflection of one play
+idea of ledger, representing the reflection of one play.
 
-<p>
  ***Series of Plays Simulation***  
 <p>
  To get the sequence of plays, we need to simulate series of plays.
@@ -368,9 +367,9 @@ have two codes solutions.
 
  ***Stop Rules Function and Average Number of Plays before Stopping***  
 <p>
-  While the one\_series function has give us a clear function to achieve
-the ledger. but we sill need to setup a stop rules to finish one series
-from infinite. based on the parameter, we have three parameter.
+  While the one\_series function has given us a clear function to
+achieve the ledger, we sill need to setup a stop rules to finish one
+series from infinite. Based on the parameter, we have three parameters.
 </p>
 
       - Maximum wager equals $300, earning $100 from $200 starting budget
@@ -401,7 +400,7 @@ from infinite. based on the parameter, we have three parameter.
 
 <p>
   With the stop rule function, the one series function will work
-functional.Furthermore, knowing when to stop, we can estimate the
+functional. Furthermore, knowing when to stop, we can estimate the
 average number of plays before stopping. The first step is to find how
 to count the number of one series play. Thus, we can find the game index
 in the ledger, counting the ledger game index row to find the total
@@ -429,9 +428,9 @@ play now.
       
 
 <p>
-  This loop allow us have a data set include 1000 plays’ runing times.
-To get the estimate avage ruing time, We can use mean function to find
-the average number:
+  This loop allows us have a data set including 1000 plays’ running
+times. To get the estimate avage ruing time, We can use mean function to
+find the average number:
 </p>
 
       mean(running_time)
@@ -455,18 +454,10 @@ mean(runing_time)
 
     ## [1] 156.862
 
-\#\#You should explain how you used computer simulation to calculate the
-average earnings of a gambler that uses this strategy. As part of the
-explanation, provide a figure (or a series of figures) that show how the
-gamblers earnings (or losses) evolve over a series of wagers at the
-roulette wheel. (The x-axis will be the wager number (or play number),
-the y-axis will be earnings.) The code below provides all the functions
-you’ll need to calculate average earnings.
-
  ***Simulation for Earning and Loss***
 <p>
- Figuring out the profit is one major task. Generally, it is how much
-difference between the finally ending budget with the initial beginning
+ Figuring out the profit is one major task. Generally, it equals
+differences between the finally ending budget with the initial beginning
 budget. As we have already got the one\_series function, we can have
 ledger information easily. Here is the code for profit calculation:
 </p>
@@ -499,14 +490,14 @@ whole simulation! here is the function code:
 ![](loser.svg)
 
 <p>
- In the graph, the total game index is 73. While, most of the tine, the
-player has a steady,but, with the bad luck, the game trend goes downside
-the strategy works in some way, but once the player have a large amount
-of loss in each sub-sequence, the player havs no budget to double the
-previous wager for the next round.
+ In the graph, the total game index is 73. While, most of the times, the
+player has a steady running. But, with the bad luck, the game trend goes
+downside. While the strategy works in some way, once having a large
+amount of loss in each sub-sequence, the player has no budget to double
+the previous wager for the next round.
 </p>
 <p>
- To calulate the net earning, we can use profit(ledger). We can get:
+ To calculate the net earning, we can use profit(ledger). We can get:
 </p>
 
 ``` r
@@ -516,8 +507,8 @@ profit(ledger)
     ## [1] -200
 
 <p>
- To get the total running times before stop, we can
-useas.numeric(count(na.omit(ledger,“game\_index”))). we get:
+ To get the total running times before stop, we can use
+as.numeric(count(na.omit(ledger,“game\_index”))). we get:
 </p>
 
 ``` r
@@ -544,12 +535,11 @@ code:
 
 ![](winner.svg)
 <p>
- In the graph, the total game index is way more than 190. This time, the
-player has a good luck. We can have a up forward trend here. the
-strategy works once the player has a large amount of win in each
-sub-sequence. While several loss-weighted sub-sequence happened, the
-player still have have enough ending budget to afford the double wager
-for next time.
+ In the graph, the total game index is 190. This time, the player has a
+good luck. We can have a up forward trend here. the strategy works once
+the player has a large amount of win in each sub-sequence. While several
+loss-weighted sub-sequence happened, the player still has enough ending
+budget to afford the double wager for next time.
 </p>
 <p>
 
@@ -557,8 +547,8 @@ for next time.
 is $100.
 
 <p>
- To get the total running times before stop, we can
-useas.numeric(count(na.omit(l2,“game\_index”))). we get:
+ To get the total running times before stop, we can use
+as.numeric(count(na.omit(l2,“game\_index”))). we get:
 </p>
 
 ``` r
@@ -568,10 +558,10 @@ as.numeric(count(na.omit(l2,"game_index")))
     ## [1] 190
 
 <p>
- Simple sample could not decide everything, we need to calculate the
-average earning of a gambler that uses this strayegy to do determine if
-it works. Thus we need a simulation function to repeat the games to get
-the answer. First, we need a simulation function:
+ Single sample solution could not conclude the solution, we need to
+calculate the average earning of a gambler that uses this strayegy to do
+determine if it works. Thus we need a simulation function to repeat the
+games to get the answer. First, we need a simulation function:
 </p>
 
       # Simulation
@@ -770,10 +760,10 @@ mean(walk_out_money > 500)
     ## [1] 0.6274
 
 <p>
-  Base on the function, We can find required propety for 10000 plays,
+  Base on the function, We can find required properties for 10000 plays,
 the estimated probability of walking out with extra cash will be
-decrease, and Estimated earnings will decrease. We can find that change
-in starting budget will not change the generail trend, but the esimiate
+decrease, and estimated earnings will decrease. We can find that changes
+in starting budget will not change the general trend, but the estimiate
 earning and probability of taking cash out will go down in this
 scenario.
 </p>

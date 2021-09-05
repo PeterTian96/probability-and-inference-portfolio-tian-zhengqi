@@ -103,7 +103,7 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
 
 
 ***Introduction***
-<p>&emsp;As the purpose of the article, We try to use data science tech to analyze a class roulette strategy, Martingale strategy. As we known that a roulette table composed of 38 (or 37) evenly sized pockets on a wheel, including red, black, or green pockets. The payout for a bet on black is 1 dollar for each wagered. Generally, for each sub sequence, no matter how many losses happened before the final red win, the win wager will not only offset the previous lost, but also will earn 1 dollar. To know whether it will work, as a data scientist,applying computer simulation will help us understand the scenario.</p>
+<p>&emsp;As the purpose of the article, We try to use data science to analyze a classic roulette strategy, Martingale Strategy. As we known that a roulette table composed of 38 (or 37) evenly sized pockets on a wheel, including red, black, or green pockets. The payout for a bet on black is 1 dollar for each wagered. Generally, for each sub sequence, no matter how many losses happened before the final red win, the win wager will not only offset the previous lost, but also will earn 1 dollar. To know whether it will work, as data scientists, we will apply computer simulation will help us understand the scenario.</p>
  
 ***Background and Operating Characters*** 
 <p>&emsp;To explain how the computer does simulation, first of all, we need think over key features in the whole procedure by understating the operating characteristics in the strategy. Generally, there are two processes, the single spin of the wheel and martingale wager rule. combing  two processing, we could create a function to replicate series of plays. To test key properties of the interest, profit or loss, we need applying stop rule for series of plays. Base on the background, we have three stopping rules:</p>
@@ -136,7 +136,7 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
 <p>&emsp;The code allow us to receive a random spin result as the red probability is 18 out of 38.
 
 &ensp;***Simulation Function for Martingale Wager Rule***
-<p>&emsp;The Next task is to consider the stimulation of martingale wager rule. To complete the whole procedures, we need find the  previous outcome. If the previous outcome negative, we need to know previous wager, max wager, and current budget as well. Then, we are able to calculate martingale wager. For martingale wager, if the outcome is <font  color=Red>"Red"</font>, the wager will be one, otherwise it will be the minimum amount between twice of the previous wage, max wage, and the current budget. Here, we have two codes solutions:</p>
+<p>&emsp;The Next task is to consider the stimulation of martingale wager rule. To complete the whole procedures, we need find the previous outcome. If the previous outcome negative, we need to know previous wager, max wager, and current budget as well. Then, we are able to calculate martingale wager. For martingale wager, if the outcome is <font  color=Red>"Red"</font>, the wager will be one dollar. Otherwise, it will be a minimum amount between twice of the previous wage, max wage, and the current budget. Here, we have two codes solutions:</p>
       # The Single Martingale Wager
       {
       proposed_wager <- ifelse(state$previous_win, 1, 2*state$previous_wager)
@@ -215,9 +215,9 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
         ifelse(out[1, "outcome"] == "red", +1, -1)*out[1, "wager"]
         return(out)
         }
-<p>&emsp;The first code solutions is a stimulation function combination of the previous three parts. The second code solution demonstrates the whole idea of ledger, representing the reflection of one play 
-
-<p>&ensp;***Series of Plays Simulation***   
+<p>&emsp;The first code solutions is a stimulation function combination of the previous three parts. The second code solution demonstrates the whole idea of ledger, representing the reflection of one play. 
+             
+&ensp;***Series of Plays Simulation***   
 <p>&emsp;To get the sequence of plays, we need to simulate series of plays. Generally, it is duplicated plays based one one-play simulation. But, the initial play has some differences. First, to mimic the round 1 correctly, we needs setup the game 0 as the initial play. Then, we will apply For loop function, allowing the computer simulate tons of play round until the play meet stop rules, which we will talk later. Here we have two codes solutions.</p>
         one_series <- function(
         B = 200
@@ -279,7 +279,7 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
   
 
 &ensp;***Stop Rules Function and Average Number of Plays before Stopping***  
-<p>&emsp; While the one_series function has give us a clear function to achieve the ledger. but we sill need to setup a stop rules to finish one series from infinite. based on the parameter, we have three parameter.</p>
+<p>&emsp; While the one_series function has given us a clear function to achieve the ledger, we sill need to setup a stop rules to finish one series from infinite. Based on the parameter, we have three parameters.</p>
       - Maximum wager equals $300, earning $100 from $200 starting budget
       - Maximum number of plays is  1000
       - bankruptcy
@@ -301,7 +301,7 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
       if(ending_budget >= winning_threshold) return(TRUE)
       FALSE
       }
-<p>&emsp; With the stop rule function, the one series function will work functional.Furthermore, knowing when to stop, we can estimate the average number of plays before stopping. The first step is to find how to count the number of one series play. Thus, we can find the game index in the ledger, counting the ledger game index row to find the total number. Do not forget, the ledger includes N/A as the initial geame index. We need to remove the row before count. Finally I can have a codes:</p>
+<p>&emsp; With the stop rule function, the one series function will work functional. Furthermore, knowing when to stop, we can estimate the average number of plays before stopping. The first step is to find how to count the number of one series play. Thus, we can find the game index in the ledger, counting the ledger game index row to find the total number. Do not forget, the ledger includes N/A as the initial geame index. We need to remove the row before count. Finally I can have a codes:</p>
       #Count the number of run in one series play
       ledger <- one_series(200,200,300,500)
       as.numeric(count(na.omit(ledger,"game_index")))
@@ -315,7 +315,7 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
       
       
       
-<p>&emsp; This loop allow us have a data set include 1000 plays' runing times. To get the estimate avage ruing time, We can use mean function to find the average number: </p>
+<p>&emsp; This loop allows us have a data set including 1000 plays' running times. To get the estimate avage ruing time, We can use mean function to find the average number: </p>
       mean(running_time)
 <p>&emsp; Based on the simulation, we can estimate that the average number of plays before stopping will be:</p>
 ```{r}
@@ -330,11 +330,8 @@ runing_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
 mean(runing_time)
 ```
 
-##You should explain how you used computer simulation to calculate the average earnings of a gambler that uses this strategy. As part of the explanation, provide a figure (or a series of figures) that show how the gamblers earnings (or losses) evolve over a series of wagers at the roulette wheel. (The x-axis will be the wager number (or play number), the y-axis will be earnings.) The code below provides all the functions you’ll need to calculate average earnings.
-
-
 &ensp;***Simulation for Earning and Loss***
-<p>&emsp;Figuring out the profit is one major task. Generally, it is how much difference between the finally ending budget with the initial beginning budget. As we have already got the one_series function, we can have ledger information easily. Here is the code for profit calculation:</p>
+<p>&emsp;Figuring out the profit is one major task. Generally, it equals differences between the finally ending budget with the initial beginning budget. As we have already got the one_series function, we can have ledger information easily. Here is the code for profit calculation:</p>
       #profit function
       profit <- function(ledger){
       n <- nrow(ledger)
@@ -358,14 +355,14 @@ mean(runing_time)
 ![](loser.svg)
     
     
-<p>&emsp;In the graph, the total game index is 73. While, most of the tine, the player has a steady,but, with the bad luck, the game trend goes downside the strategy works in some way, but once the player have a large amount of loss in each sub-sequence, the player havs no budget to double the previous wager for the next round. </p>
+<p>&emsp;In the graph, the total game index is 73. While, most of the times, the player has a steady running. But, with the bad luck, the game trend goes downside. While the strategy works in some way, once having a large amount of loss in each sub-sequence, the player has no budget to double the previous wager for the next round. </p>
 
-<p>&emsp;To calulate the net earning, we can use profit(ledger). We can get:</p>
+<p>&emsp;To calculate the net earning, we can use profit(ledger). We can get:</p>
 ```{r}
 profit(ledger)
 ```
 
-<p>&emsp;To get the total running times before stop, we can useas.numeric(count(na.omit(ledger,"game_index"))). we get:</p>
+<p>&emsp;To get the total running times before stop, we can use as.numeric(count(na.omit(ledger,"game_index"))). we get:</p>
 
 ```{r}
 as.numeric(count(na.omit(ledger,"game_index")))
@@ -383,18 +380,18 @@ as.numeric(count(na.omit(ledger,"game_index")))
 <p>&emsp; The visible graph is here:
   
 ![](winner.svg)
-<p>&emsp;In the graph, the total game index is way more than 190. This time, the player has a good luck. We can have a up forward trend here. the strategy works once the player has a large amount of win in each sub-sequence. While several loss-weighted sub-sequence happened, the player still have have enough ending budget to afford the double wager for next time.</p>
+<p>&emsp;In the graph, the total game index is 190. This time, the player has a good luck. We can have a up forward trend here. the strategy works once the player has a large amount of win in each sub-sequence. While several loss-weighted sub-sequence happened, the player still has enough ending budget to afford the double wager for next time.</p>
 
 <p>&emsp;As the player stops running times with maximum wager, the profit here is $100.
 
-<p>&emsp;To get the total running times before stop, we can useas.numeric(count(na.omit(l2,"game_index"))). we get:</p>
+<p>&emsp;To get the total running times before stop, we can use as.numeric(count(na.omit(l2,"game_index"))). we get:</p>
 
 ```{r} 
 as.numeric(count(na.omit(l2,"game_index")))
 
 ```
 
-<p>&emsp;Simple sample could not decide everything, we need to calculate the average earning of a gambler that uses this strayegy to do determine if it works. Thus we need a simulation function to repeat the games to get the answer. First, we need a simulation function:</p>
+<p>&emsp;Single sample solution could not conclude the solution, we need to calculate the average earning of a gambler that uses this strayegy to do determine if it works. Thus we need a simulation function to repeat the games to get the answer. First, we need a simulation function:</p>
       # Simulation
       walk_out_money <- rep(NA, 10000)
       for(j in seq_along(walk_out_money)){
@@ -542,7 +539,7 @@ mean(walk_out_money > 500)
 ```
   
   
-<p>&emsp; Base on the function, We can find required propety for 10000 plays, the estimated probability of walking out with extra cash will be decrease, and Estimated earnings will decrease. We can find that change in starting budget will not change the generail trend, but the esimiate earning and probability of taking cash out will go down in this scenario.</p>
+<p>&emsp; Base on the function, We can find required properties for 10000 plays, the estimated probability of walking out with extra cash will be decrease, and estimated earnings will decrease. We can find that changes in starting budget will not change the general trend, but the estimiate earning and probability of taking cash out will go down in this scenario.</p>
 
 <p> we can also change maximum number of plays from 1000 to 500. Here is the stimulation code to verify the hypothesis: </p>
       # Simulation
