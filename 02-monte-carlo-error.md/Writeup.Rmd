@@ -1,0 +1,98 @@
+---
+title: "Writeup"
+author: "Zhengqi Tian"
+date: "9/10/2021"
+output: github_document
+---
+Reference:https://www.investopedia.com/terms/m/montecarlosimulation.asp
+
+
+***Introduction***
+<p>&emsp;As data scientist, we use simulation to generate approximate answer, providing prediction. Monte Carlo simulation is a classic model for the task. It is a  fact is that there is some degree of error in a quantity estimated. However, we find the degree of error get smaller as the number of simulation replicates increase. The blog is focusing on the investigation of the relationship between the number of replicates and simulation error.</p>
+
+***Concepts***
+<p>&emsp;The basis of a Monte Carlo simulation is that the probability of varying outcomes cannot be determined by random variable interference. Thus, the model focuses on constantly repeating random samples to achieve certain results.
+
+<p>&emsp;We assume that the more simulation replicates, the Himmler the degree of error between estimated values and True values. For statistics, we can find the absolute error and relative error, figuring out which one can be a better error we look for. 
+
+***Key Vocabulary Terms and Step***
+<p>&emsp;To setup the simulation, The first step is to set several true variable we trying to observe. For this case, we set five true underlying probability, as P. The is the detail:</p>
+    
+```{r}
+probability<-c(0.01, 0.05, 0.10, 0.25, 0.50)
+probability
+```
+  
+    
+<p>&emsp; Second, we need apply some benchmarks to sign the replicate number. the replicate number allow as to repeated simulation process again and again,providing the estimated value, which here is estimated probability based on the true underlying portability. with the code we can have  14 replicated numbers:</p>
+```{r}
+
+size<-NULL
+  size[1]<-2
+  for(i in 2:14)(
+  size[i]=size[i-1]*2
+ )
+  size
+```
+<p>&emsp; Third, to find the random estimated probability based on the 14 x 5 factorial experiment simulation, we use binomial distribution. Applying the following code is helpful:</p>
+    rbinom(n, size, prob)
+
+<p>&emsp; In the code X is the  number of observations, size is the replicate number, and the prob is the true underlying probability. To find a more accurate estimated probability, we want to have a large number of observation before finding the average meaning of a set of estimate P. We apply the follow code to find the random estimated p:</p>
+    rbinom(1000, size, probability)
+    
+<p>&emsp; Fourth, we need apply the functions of absolute error and relative erro function to find two types of error. Calculate error as:</p>
+    Absolute Error=|p̂−p|
+    and
+    Relative error=|p̂−p|/p.
+<p>&emsp; Here are simulation R code chunk for errors: </p>
+    Aabsolute Error=mean(abs((rbinom(1000, size, probability) / size) - probability)
+    and
+    Relative error=mean(abs((rbinom(1000, size, probability) / size) - probability) / probability)
+    
+<p>&emsp; Now have got all random error now. Here is the code to show all the errs based on our factorial experiment we have</p>    
+```{r}
+data<-data.frame(size = rep(size, length(probability)), probability = rep(probability, length(size)), Abs_Error = rep(NA, length(probability) * length(size)),Rel_Error = rep(NA, length(probability) * length(size)))
+
+for (i in 1:nrow(data)) {
+  size =data$size[i] 
+  probability = data$probability[i]
+  Abs=mean(abs((rbinom(1000, size, probability) / size) - probability))
+  Rel= mean(abs((rbinom(1000, size, probability) / size) - probability) / probability)
+  data[i, "Abs_Error"] = Abs
+  data[i, "Rel_Error"] = Rel
+}
+set.seed(30)
+data
+```
+    
+
+***Visualization*** 
+
+<p>&emsp;Now, thank ggplot package for giving us a quick way to visualize the solutions. We are about have the absolute error figure and the relative error figure.</p>
+
+<p>&emsp;Here is the Absolute Error:</p>
+```{r}
+require(ggplot2)
+ggplot(data, aes(size, Abs_Error, color = factor(probability))) + 
+  geom_point() +
+  geom_line(aes(group = probability)) + 
+  scale_x_continuous(trans = "log2") +
+  ylab("Absolute Error")
+```
+
+<p>&emsp;Here is the related error table:</p>
+```{r}
+require(ggplot2)
+ggplot(data, aes(size, Rel_Error, color = factor(probability))) + 
+  geom_point() +
+  geom_line(aes(group = probability)) + 
+  scale_x_continuous(trans = "log2") +
+  ylab("Related Error")
+```
+
+***Solution***
+<p>&emsp; Now, we have both figures for Monte Carlo simulation error. Generally, both errors have same tracks. As the replicate number rise up, the absolute error and related error go down. we have more confidence to say that the higher replicate number allow us to have a estimated p, which close to the true p.</p>
+
+<p>&emsp;However, absolute error goes sharp down when the replicate number is 16. We can find the related error have a more smooth downside line than absolute error has. As the relative error compare the absolute error with the real value, we can find it is more accurate than absolute error, when the replicate number is smaller. But accuracy impact will be mitigate as the replciate number goes large.</p> 
+
+<p>&emsp; Thus, when we want to find a estimated value of a certain issue, if we do not have a large replicate size, we prefer to use related error as a benchmark of simulation error. It is a economic way to get a better prediction.</p>

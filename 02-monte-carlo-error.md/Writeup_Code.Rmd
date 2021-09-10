@@ -1,0 +1,69 @@
+---
+title: "Writeup"
+author: "Zhengqi Tian"
+date: "9/8/2021"
+output: html_document
+output: github_document
+
+---
+```{r}
+require(tidyverse)
+library(ggplot2)
+require(scales)
+
+```
+
+
+```{r}
+  size<-NULL
+  size[1]<-2
+  for(i in 2:14)(
+  size[i]=size[i-1]*2
+ )
+  size
+  
+  
+  probability<-c(0.01, 0.05, 0.10, 0.25, 0.50)
+  probability
+```
+
+
+```{r}
+ data<-data.frame(size = rep(size, length(probability)), probability = rep(probability, length(size)), Abs_Error = rep(NA, length(probability) * length(size)),Rel_Error = rep(NA, length(probability) * length(size)))
+
+for (i in 1:nrow(data)) {
+  size =data$size[i] 
+  probability = data$probability[i]
+  Abs=mean(abs((rbinom(1000, size, probability) / size) - probability))
+  Rel= mean(abs((rbinom(1000, size, probability) / size) - probability) / probability)
+  data[i, "Abs_Error"] = Abs
+  data[i, "Rel_Error"] = Rel
+}
+set.seed(30)
+data
+
+```
+
+
+
+
+
+
+
+```{r}
+ggplot(data, aes(size, Abs_Error, color = factor(probability))) + 
+  geom_point() +
+  geom_line(aes(group = probability)) + 
+  scale_x_continuous(trans = "log2") +
+  ylab("Absolute Error")
+
+ggplot(data, aes(size, Rel_Error, color = factor(probability))) + 
+  geom_point() +
+  geom_line(aes(group = probability)) + 
+  scale_x_continuous(trans = "log2") +
+  ylab("Related Error")
+```
+
+
+
+
