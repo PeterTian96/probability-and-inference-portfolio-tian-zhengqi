@@ -3,7 +3,7 @@ title: "Writeup"
 author: "Zhengqi Tian"
 date: "9/8/2021"
 output: html_document
-output: github_document
+
 
 ---
 ```{r}
