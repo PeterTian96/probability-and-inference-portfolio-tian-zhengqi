@@ -404,13 +404,13 @@ functional. Furthermore, knowing when to stop, we can estimate the
 average number of plays before stopping. The first step is to find how
 to count the number of one series play. Thus, we can find the game index
 in the ledger, counting the ledger game index row to find the total
-number. Do not forget, the ledger includes N/A as the initial geame
+number. Do not forget, the ledger includes N/A as the initial game
 index. We need to remove the row before count. Finally I can have a
 codes:
 </p>
 
       #Count the number of run in one series play
-      ledger <- one_series(200,200,300,500)
+      ledger <- one_series(1000,200,300,100)
       as.numeric(count(na.omit(ledger,"game_index")))
 
 <p>
@@ -420,7 +420,7 @@ play now.
 
       running_time <- rep(NA, 1000)
       for(i in seq_along(running_time)){
-      ledger <- one_series(200,200,300,500)   
+      ledger <- one_series(1000,200,300,100)   
       running_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
       }
       
@@ -428,7 +428,7 @@ play now.
       
 
 <p>
-  This loop allows us have a data set including 1000 plays’ running
+  This loop allows us have a data set including 10000 plays’ running
 times. To get the estimate avage ruing time, We can use mean function to
 find the average number:
 </p>
@@ -442,17 +442,16 @@ plays before stopping will be:
 
 ``` r
 #average number of plays before stopping
-
-runing_time <- rep(NA, 1000)
+runing_time <- rep(NA, 10000)
 for(i in seq_along(runing_time)){
-ledger <- one_series(200,200,300,500)
+ledger <- one_series(1000,200,300,100)
 runing_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
 }
 
 mean(runing_time)
 ```
 
-    ## [1] 156.862
+    ## [1] 202.7229
 
  ***Simulation for Earning and Loss***
 <p>
@@ -504,7 +503,7 @@ the previous wager for the next round.
 profit(ledger)
 ```
 
-    ## [1] -200
+    ## [1] 100
 
 <p>
  To get the total running times before stop, we can use
@@ -512,10 +511,22 @@ as.numeric(count(na.omit(ledger,“game\_index”))). we get:
 </p>
 
 ``` r
+svg(filename = "loser.svg", width=16, height =9)
+par(cex.axis=2, cex.lab = 2, mar = c(8,8,2,2), bg = rgb(222, 235, 247, max = 255))
+set.seed(1)
+ledger <- one_series(200,200,300,500)
+plot(ledger[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
+dev.off()
+```
+
+    ## quartz_off_screen 
+    ##                 2
+
+``` r
 as.numeric(count(na.omit(ledger,"game_index")))
 ```
 
-    ## [1] 25
+    ## [1] 73
 
 <p>
  With following code, we could stimulate a loser solution. Here is the
@@ -665,7 +676,7 @@ for(j in seq_along(walk_out_money)){
 mean(walk_out_money - 200)
 ```
 
-    ## [1] -44.9347
+    ## [1] -46.1425
 
 <p>
   Here is the related distribution.
@@ -689,7 +700,7 @@ cash will be:
 mean(walk_out_money > 200)
 ```
 
-    ## [1] 0.5169
+    ## [1] 0.5127
 
 ***Average earning impact based on a changing parameter***  
 <p>
@@ -735,7 +746,7 @@ get:
 mean(walk_out_money - 600)
 ```
 
-    ## [1] -200.2726
+    ## [1] -198.2648
 
 <p>
  We can also have the distribution here:
@@ -757,7 +768,7 @@ mean(walk\_out\_money &gt; 600), to get:
 mean(walk_out_money > 500)
 ```
 
-    ## [1] 0.6274
+    ## [1] 0.6298
 
 <p>
   Base on the function, We can find required properties for 10000 plays,
@@ -864,7 +875,7 @@ get:
 mean(walk_out_money - 300)
 ```
 
-    ## [1] -143.68
+    ## [1] -132.37
 
 <p>
  We can also have the distributioN here:
@@ -885,7 +896,7 @@ mean(walk\_out\_money &gt; 600), to get:
 mean(walk_out_money > 200)
 ```
 
-    ## [1] 0.53
+    ## [1] 0.56
 
 <p>
   Based on the simulation solutiont, we could find that few maximum

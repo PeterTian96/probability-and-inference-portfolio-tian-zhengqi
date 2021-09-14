@@ -109,7 +109,7 @@ as.numeric(count(na.omit(l2,"game_index")))
 #average number of plays before stopping
 runing_time <- rep(NA, 1000)
 for(i in seq_along(runing_time)){
-ledger <- one_series(200,200,300,500)
+ledger <- one_series(1000,200,300,100)
 runing_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
 }
 

@@ -301,29 +301,30 @@ plot(l2[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
       if(ending_budget >= winning_threshold) return(TRUE)
       FALSE
       }
-<p>&emsp; With the stop rule function, the one series function will work functional. Furthermore, knowing when to stop, we can estimate the average number of plays before stopping. The first step is to find how to count the number of one series play. Thus, we can find the game index in the ledger, counting the ledger game index row to find the total number. Do not forget, the ledger includes N/A as the initial geame index. We need to remove the row before count. Finally I can have a codes:</p>
+<p>&emsp; With the stop rule function, the one series function will work functional. Furthermore, knowing when to stop, we can estimate the average number of plays before stopping. The first step is to find how to count the number of one series play. Thus, we can find the game index in the ledger, counting the ledger game index row to find the total number. Do not forget, the ledger includes N/A as the initial game index. We need to remove the row before count. Finally I can have a codes:</p>
       #Count the number of run in one series play
-      ledger <- one_series(200,200,300,500)
+      ledger <- one_series(1000,200,300,100)
       as.numeric(count(na.omit(ledger,"game_index")))
 <p>&emsp;Now, what we need is to create a stimulation so that 1000 players can play now. </p>
 
       running_time <- rep(NA, 1000)
       for(i in seq_along(running_time)){
-      ledger <- one_series(200,200,300,500)   
+      ledger <- one_series(1000,200,300,100)   
       running_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
       }
       
       
       
-<p>&emsp; This loop allows us have a data set including 1000 plays' running times. To get the estimate avage ruing time, We can use mean function to find the average number: </p>
+<p>&emsp; This loop allows us have a data set including 10000 plays' running times. To get the estimate avage ruing time, We can use mean function to find the average number: </p>
+     
       mean(running_time)
 <p>&emsp; Based on the simulation, we can estimate that the average number of plays before stopping will be:</p>
 ```{r}
-#average number of plays before stopping
 
-runing_time <- rep(NA, 1000)
+#average number of plays before stopping
+runing_time <- rep(NA, 10000)
 for(i in seq_along(runing_time)){
-ledger <- one_series(200,200,300,500)
+ledger <- one_series(1000,200,300,100)
 runing_time[i] <-as.numeric(count(na.omit(ledger,"game_index")))
 }
 
@@ -365,7 +366,16 @@ profit(ledger)
 <p>&emsp;To get the total running times before stop, we can use as.numeric(count(na.omit(ledger,"game_index"))). we get:</p>
 
 ```{r}
+svg(filename = "loser.svg", width=16, height =9)
+par(cex.axis=2, cex.lab = 2, mar = c(8,8,2,2), bg = rgb(222, 235, 247, max = 255))
+set.seed(1)
+ledger <- one_series(200,200,300,500)
+plot(ledger[,c(1,5)], type = "l", lwd = 5, xlab = "Game Index", ylab = "Budget")
+dev.off()
+
 as.numeric(count(na.omit(ledger,"game_index")))
+
+
 
 ```
 
