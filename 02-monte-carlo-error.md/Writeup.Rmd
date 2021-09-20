@@ -5,6 +5,7 @@ date: "9/10/2021"
 output:  html_document
 ---
 Reference:https://www.investopedia.com/terms/m/montecarlosimulation.asp
+https://www.vedantu.com/maths/absolute-and-relative-error
 
 
 ***Introduction***
@@ -27,11 +28,10 @@ probability
 <p>&emsp; Second, we need apply some benchmarks to sign the replicate number. the replicate number allow as to repeated simulation process again and again,providing the estimated value, which here is estimated probability based on the true underlying portability. with the code we can have  14 replicated numbers:</p>
 ```{r}
 
-size<-NULL
-  size[1]<-2
-  for(i in 2:14)(
-  size[i]=size[i-1]*2
- )
+  size <- NULL
+for(i in 2:15) {
+  size[i-1] <- 2**i
+}
   size
 ```
 <p>&emsp; Third, to find the random estimated probability based on the 14 x 5 factorial experiment simulation, we use binomial distribution. Applying the following code is helpful:</p>
@@ -40,12 +40,15 @@ size<-NULL
 <p>&emsp; In the code X is the  number of observations, size is the replicate number, and the prob is the true underlying probability. To find a more accurate estimated probability, we want to have a large number of observation before finding the average meaning of a set of estimate P. We apply the follow code to find the random estimated p:</p>
     rbinom(1000, size, probability)
     
-<p>&emsp; Fourth, we need apply the functions of absolute error and relative erro function to find two types of error. Calculate error as:</p>
+<p>&emsp; Fourth, we need apply the functions of absolute error and relative erro function to find two types of error. The reason we select two erros beucase we want to know which error type is more accurate to match the monte-carlo-error.Calculate error as:</p>
     Absolute Error=|p̂−p|
     and
     Relative error=|p̂−p|/p.
-<p>&emsp; Here are simulation R code chunk for errors: </p>
-    Aabsolute Error=mean(abs((rbinom(1000, size, probability) / size) - probability)
+
+<p>&emsp;The absolute error is calculated by the subtraction of the actual p from p hat and the measured value of the difference.The relative error is based on the absolute error but we need divide the absolute error from the actual p.The ratio of absolute error of the measurement and the actual value is called relative error. By calculating the relative error, we will be able to know how good the measurement is compared to the actual p. 
+
+<p>&emsp;Here are simulation R code chunk for errors: </p>
+    Absolute Error=mean(abs((rbinom(1000, size, probability) / size) - probability)
     and
     Relative error=mean(abs((rbinom(1000, size, probability) / size) - probability) / probability)
     
@@ -56,12 +59,12 @@ data<-data.frame(size = rep(size, length(probability)), probability = rep(probab
 for (i in 1:nrow(data)) {
   size =data$size[i] 
   probability = data$probability[i]
-  Abs=mean(abs((rbinom(1000, size, probability) / size) - probability))
-  Rel= mean(abs((rbinom(1000, size, probability) / size) - probability) / probability)
+  Abs=mean(abs((rbinom(1e4, size, probability) / size)-probability))
+  Rel= mean(abs(((rbinom(1e4, size, probability) / size) - probability)/ probability))
   data[i, "Abs_Error"] = Abs
   data[i, "Rel_Error"] = Rel
 }
-set.seed(30)
+set.seed(1)
 data
 ```
     
@@ -80,19 +83,19 @@ ggplot(data, aes(size, Abs_Error, color = factor(probability))) +
   ylab("Absolute Error")
 ```
 
-<p>&emsp;Here is the related error table:</p>
+<p>&emsp;Here is the relative error table:</p>
 ```{r}
 require(ggplot2)
 ggplot(data, aes(size, Rel_Error, color = factor(probability))) + 
   geom_point() +
   geom_line(aes(group = probability)) + 
   scale_x_continuous(trans = "log2") +
-  ylab("Related Error")
+  ylab("Relative Error")
 ```
 
 ***Solution***
-<p>&emsp; Now, we have both figures for Monte Carlo simulation error. Generally, both errors have same tracks. As the replicate number rise up, the absolute error and related error go down. we have more confidence to say that the higher replicate number allow us to have a estimated p, which close to the true p.</p>
+<p>&emsp; Now, we have both figures for Monte Carlo simulation error. Generally, both errors have same tracks. As the replicate number rise up, the absolute error and relative error go down. we have more confidence to say that the higher replicate number allow us to have a estimated p, which close to the true p.</p>
 
-<p>&emsp;However, absolute error goes sharp down when the replicate number is 16. We can find the related error have a more smooth downside line than absolute error has. As the relative error compare the absolute error with the real value, we can find it is more accurate than absolute error, when the replicate number is smaller. But accuracy impact will be mitigate as the replciate number goes large.</p> 
+<p>&emsp;However, absolute error goes sharp down when the replicate number is 16. We can find the relative error have a more smooth downside line than absolute error has. As the relative error compare the absolute error with the real value, we can find it is more accurate than absolute error, when the replicate number is smaller. But accuracy impact will be mitigate as the replciate number goes large.</p> 
 
-<p>&emsp; Thus, when we want to find a estimated value of a certain issue, if we do not have a large replicate size, we prefer to use related error as a benchmark of simulation error. It is a economic way to get a better prediction.</p>
+<p>&emsp; Thus, when we want to find a estimated value of a certain issue, if we do not have a large replicate size, we prefer to use relative error as a benchmark of simulation error. It is a economic way to get a better prediction.</p>
