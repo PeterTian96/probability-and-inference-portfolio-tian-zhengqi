@@ -80,7 +80,8 @@ ggplot(data, aes(size, Abs_Error, color = factor(probability))) +
   geom_point() +
   geom_line(aes(group = probability)) + 
   scale_x_continuous(trans = "log2") +
-  ylab("Absolute Error")
+  ylab("Absolute Error") +
+  theme_bw()
 ```
 
 <p>&emsp;Here is the relative error table:</p>
@@ -90,7 +91,8 @@ ggplot(data, aes(size, Rel_Error, color = factor(probability))) +
   geom_point() +
   geom_line(aes(group = probability)) + 
   scale_x_continuous(trans = "log2") +
-  ylab("Relative Error")
+  ylab("Relative Error")+
+  theme_bw()
 ```
 
 ***Solution***

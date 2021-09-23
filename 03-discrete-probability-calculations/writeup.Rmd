@@ -1,0 +1,160 @@
+---
+title: "writeup"
+author: "Zhengqi Tian"
+date: "9/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+***Introduction***
+<p>&emsp; The world series is a best-of-7 match-up between the champions of the American and National Leagues of Major League Baseball. Suppose that the Braves and the Yankees are teams competing in the World Series and the probability that the Braves win is PB and the probability that the Yankees win is Py =1 − Pb. The blog is trying to explain each following questions in different situation. </p>
+
+
+***Question 1: What is the probability that the Braves win the World Series given that Pb= 0.55***
+<p>&emsp; To answer the question, we need to consider the definition of the win opportunity. Braves needs to win 4 times in 7 games, or 3 loses in 7 games. As we know the Pb and Py, we will able to have the following expressions </p>
+```{r}
+Pb<- 0.55
+Py<- 1-Pb
+Brave_Win_Prob<- 
+  dnbinom(0,4,Pb)+
+  dnbinom(1,4,Pb)+
+  dnbinom(2,4,Pb)+
+  dnbinom(3,4,Pb)
+```
+<p>&emsp; Here, we are able to calculate the probability of a win, which is </P>
+
+```{r}
+Brave_Win_Prob
+```
+
+```{r}
+Brave_Win_Prob<- function(p){
+  pnbinom(3,4,p)
+}
+```
+
+***Question 2: What is the probability that the Braves win the World Series given that Pb= x***
+<p>&emsp; While we do not have a clear Pb here, we assume the probability of winning the world series is something from 0.5 to 1.0. Before we start a simulation, the first thing is to set a data set for Pb's probability results. 
+```{r}
+Pbseries <- seq(0.5,1, 0.01)
+B_win_Prob <- rep(NA,length(Pbseries))
+```
+<p>&emsp; Now, as we use dnbinom function previous to have a win probability, we can leverage the expression to complete our simulation probability results.
+```{r}
+for(i in 1:length(Pbseries)){
+  B_win_Prob[i]<-
+    dnbinom(0,4,Pbseries[i])+
+    dnbinom(1,4,Pbseries[i])+
+    dnbinom(2,4,Pbseries[i])+
+    dnbinom(3,4,Pbseries[i])
+}
+```
+<p>&emsp;Here is the simulation data set for the probability of Brave winning the wolrd series</p>
+```{r}
+Pbseries
+B_win_Prob
+data<-data.frame(Pbseries,B_win_Prob)
+data
+```
+<p>&emsp;Now, we are able to interpret the relationship between Pb and the probability of the Braves winning a head to head matchup.
+```{r}
+require(ggplot2)
+graph_question2<-ggplot(data,aes(x=Pbseries,y=B_win_Prob))+geom_point()
+graph_question2+labs(
+  titles="Probability of winning the World Series",
+  x="Probability of the Braves winning a head to head matchup",
+  y="P(Braves) win World Series")+
+  theme_bw()+
+  theme(plot.title=element_text(hjust=0.5))
+```
+<p>&emsp; Based on the graph, we conclude that the higher the Pb, the higher probability of the Braves winning a head to head matchup games.</p>
+
+***Question 3: Suppose one could change the World Series to be best-of-9 or some other best-of-X series. What is the shortest series length so that P(Braves win World Series|PB=.55)≥0.8***
+<p>&emsp; As we know that the Pb needs to be 0.55, we want to observe the outcome as the game series length change. In fact, we want the total length be a odd number, so that one team is able to win. we assume the game around could up to 99999. When the probability is equal to or more than 0.8, we find it as the shortest series length and probability for the shortest series.</p>
+
+```{r}
+series_length <- seq(1, 99999, 2)
+for(i in 1:length(series_length)){
+  Pb_win<-pnbinom(ceiling(series_length[i]/2)-1,ceiling(series_length[i]/2),0.55)
+  if(Pb_win>=0.8){
+    shortest<-series_length[i]
+    p_shortest<-Pb_win
+    break
+  }
+}
+
+shortest
+ p_shortest
+```
+
+<p>&emsp; Thus, We could find that the shortest series length so that P(Braves win World Series|PB=.55)≥0.8 will be 71, and the probibility of win here is 0.8017017
+
+***Question 4:What is the shortest series length so that P(Braves win World Series|Pb=x)≥0.8? This will be a figure (see below) with PB on the x-axis and series length is the y-axis.***
+<p>&emsp;Now were are able to find the required the shortest series length so that P(Braves win World Series|PB=.55)≥0.8. To draw to graph, we will also need the data frame for different Pb value. </p>
+
+<p>&emsp;The first thing here is to defind the variables we look for. First is the uncertain Pb and the another the shortest length based on each Pb. Thus, we will be able to have the following code.</p>
+```{r}
+Pbseries <- seq(0.5,1, 0.01)
+Shortest_Record<- rep(NA,length(Pbseries))
+```
+
+<p>&emsp;Now, we just put these two data set into the question 3 expression to find all require data via data frame.
+
+```{r}
+for(i in 1:length(Pbseries)){
+for(j in 1:length(series_length)){
+  Pb_win<-pnbinom(ceiling(series_length[j]/2)-1,ceiling(series_length[j]/2),Pbseries[i])
+  if(Pb_win>=0.8){
+    shortest<-series_length[j]
+    break}
+  }
+  Shortest_Record[i]<-shortest
+}
+
+Pbseries
+Shortest_Record
+data2<-data.frame(Pbseries,Shortest_Record)
+data2
+```
+<p>&emsp; With the data frame, we will be able to have a table to show there relationship between series length and the probability of the Braves winning a head-to-head matychup.</p>
+
+```{r}
+graph_question4<-ggplot(data2,aes(x=Pbseries,y=Shortest_Record))+geom_point()
+graph_question4+labs(
+  titles="Shortest series so that P(Win WS given p)>=0.8",
+  x="Probability of the Braves winning a head to head matchup",
+  y="Series length")+
+  theme_bw()+
+  theme(plot.title=element_text(hjust=0.5))
+```
+<p>&emsp; In the graph, when Pb increase, the shortest series length is close to 1.When Pb is bigger than 0.8, the shortest series length is 1.</p>
+
+***Calculate P(PB=0.55|Braves win World Series in 7 games) under the assumption that either PB=0.55 or PB=0.45. Explain your solution.***
+<p>&emsp; In the graph, P(PB=0.55|Braves win World Series in 7 games) =P(Braves win World Series in 7 games|PB=0.55) * P(PB=0.55) ÷ P(Braves win World Series in 7 games).</p>
+
+<p>&emsp; we are able to use dnbinom() calculate P(Braves win World Series in 7 games) and P(Braves win World Series in 7 games|PB=0.55):
+```{r}
+prob_Braves_win_in_games<-(dnbinom(3,4,0.45)+dnbinom(3,4,0.55))/2
+prob_Braves_win_in_games_Pb<-dnbinom(3,4,0.55)
+```
+<p>&emsp; P(Braves win World Series in 7 games) will be</p>
+
+```{r}
+prob_Braves_win_in_games
+```
+
+<p>&emsp; P(Braves win World Series in 7 games|PB=0.55) will be</p>
+```{r}
+prob_Braves_win_in_games_Pb
+
+```
+<p>&emsp; ThusP(PB=0.55|Braves win World Series in 7 games) will be P(Braves win World Series in 7 games|PB=0.55) * P(PB=0.55) ÷ P(Braves win World Series in 7 games). P(PB=0.55) = 0.5</p>
+
+```{r}
+prob_Braves_win_in_games_Pb*0.5/prob_Braves_win_in_games
+
+```
+
