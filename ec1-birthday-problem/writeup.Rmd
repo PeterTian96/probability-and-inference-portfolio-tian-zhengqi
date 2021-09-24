@@ -1,0 +1,96 @@
+---
+title: "writeup"
+output: html_document
+---
+
+
+***Introduction***
+The blog is post to explain how to solve the birthday problem with both analytics and simulation tools. Assume that birthdays are equally likely to fall on any day of the year, ignoring leap year. A generated graph shows both solution for a range of possible classes, say 1 to 80 as in the figure shell below. Lets explain the detail one by one
+
+***Analytics Solution***
+<p>&emsp;To find the probability that at least two students having same birthday, We can use 1- the porbability of no student having same birthday. Let start from a small size of class. If there is only one student in the class, the proability of a student's birthday, will be 365 or 365, which mean one can have any day in a regular year. Now, if we have two students, the probability of two unique birthday will be (365/365)(364/365)]. If we have three, the probability of three unique birthday class will be (365/365)(364/365)(363/365). With the idea will can assume that the prorbability of twenty unique birthday will be </p>
+```{r}
+factorial(20) * choose(365,20) / (365^20)
+```
+<p>&emsp; Thus, the probability of at least two students having a same birthday will be </p>
+
+```{r}
+1-factorial(20) * choose(365,20) / (365^20)
+```
+
+<p>&emsp;With this idea, we are able to calculation the probability of at least two student having a same birthday as the class size is from 1 to 80. The following expressions help use find the outcome. </p>
+```{r}
+#size of group
+group.size<-seq(1,80,1)
+
+#at least two students will share a birthday
+analytic.solution<-rep(NA,length(group.size))
+
+for(i in 1:length(group.size)){
+ analytic.solution[i]= 1-factorial(i-1) * choose(365, (i-1)) / (365^(i-1))
+}
+analytic.solution
+```
+
+***Simulation Solution***
+<p>&emsp;The simulation solution is little different. Lets think step by step. First, as we know the students can have birthdays in any date. we can use number 1 to 365 to represent the date, and each student in the class will have a random number from 1 to 365 as their birthday. Now we are able to have one class performance under certain classmates' size. </p>
+
+<p>&emsp;Second, as we assume one class is one test round, if we test 10000 classes' performance and 50 class have duplicate birthday, we can use the ratio to imply the probability of duplicate birthday in the class based on classmate size./p>
+
+<p>&emsp;The following expressions is based on 10000 tests to find the probability of at least two students having same birthday in each class size from 1 to 80.</p>
+
+```{r}
+#Simulation
+#duplicate birthday class amount
+duplicated.class.amount<-function(student.amount=10,test.round=10){
+  test.round<-seq(0,test.round,1)
+  duplicated.class<-0
+  for (i in 1:length(test.round)){
+  test.round[i]=any(duplicated(sample(1:365,student.amount,replace = T)))
+  if(test.round[i]==1){
+    duplicated.class<-as.numeric(duplicated.class+1)
+  }
+  }
+  duplicated.class
+  }
+
+#Probability of duplicate birth date in classes
+prob.duplicate.birth<-function(duplicated.class.amount,test.round){
+  prob<-duplicated.class.amount/test.round
+  prob
+}
+
+prob.duplicate.birth(duplicated.class.amount(10,1000),1000)
+
+#simulation
+simulation.solution<-rep(NA,80)
+  for(i in 0:length(simulation.solution)){
+  simulation.solution[i]=prob.duplicate.birth(duplicated.class.amount(i,10000),10000)
+}
+
+simulation.solution
+
+
+```
+
+<p>&emsp; Now we are able to have all the data in the data frame. Here is the data frame
+
+```{r}
+#data frame
+data<-data.frame(group.size,analytic.solution,simulation.solution)
+data
+```
+
+<p>&emsp;With the data, we are able to have the grah via ggplot.
+
+```{r}
+#plot
+require(ggplot2)
+g<-ggplot(data)+geom_point(aes(y=analytic.solution,x=group.size,color="analytic.solution"))+geom_point(aes(y=simulation.solution,x=group.size,color="simulation.solution"))
+g+labs(
+  y="Probability at least one share the birthday",
+  x="size of group")+
+  theme_bw()
+```
+***Solution***
+<p>&emsp;From the graph, we can find that the larger the size of group, the higher the probability at least one share the birthday. As the size achieved 60, the probility is almost approach 1. Both method solutionn have a closed solution. However, compare with the analytic solution, the simulation have a lower probility when the size of group is small. Its may because of the simulation times. 
