@@ -92,5 +92,7 @@ g+labs(
   x="size of group")+
   theme_bw()
 ```
+
+
 ***Solution***
 <p>&emsp;From the graph, we can find that the larger the size of group, the higher the probability at least one share the birthday. As the size achieved 60, the probility is almost approach 1. Both method solutionn have a closed solution. However, compare with the analytic solution, the simulation have a lower probility when the size of group is small. Its may because of the simulation times. 
