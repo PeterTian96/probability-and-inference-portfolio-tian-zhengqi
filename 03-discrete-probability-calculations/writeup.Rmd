@@ -1,4 +1,4 @@
----
+、---
 title: "writeup"
 author: "Zhengqi Tian"
 date: "9/22/2021"
@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ***Question 1: What is the probability that the Braves win the World Series given that Pb= 0.55***
-<p>&emsp; To answer the question, we need to consider the definition of the win opportunity. Braves needs to win 4 times in 7 games, or 3 loses in 7 games. As we know the Pb and Py, we will able to have the following expressions </p>
+<p>&emsp; To answer the question, we need to consider the definition of the win opportunity. Braves needs to win at least 4 times in 7 games, or most 3 loses in 7 games. As we know the Pb and Py, we will able to have the following expressions </p>
 ```{r}
 Pb<- 0.55
 Py<- 1-Pb
@@ -28,12 +28,6 @@ Brave_Win_Prob<-
 
 ```{r}
 Brave_Win_Prob
-```
-
-```{r}
-Brave_Win_Prob<- function(p){
-  pnbinom(3,4,p)
-}
 ```
 
 ***Question 2: What is the probability that the Braves win the World Series given that Pb= x***
@@ -73,10 +67,10 @@ graph_question2+labs(
 <p>&emsp; Based on the graph, we conclude that the higher the Pb, the higher probability of the Braves winning a head to head matchup games.</p>
 
 ***Question 3: Suppose one could change the World Series to be best-of-9 or some other best-of-X series. What is the shortest series length so that P(Braves win World Series|PB=.55)≥0.8***
-<p>&emsp; As we know that the Pb needs to be 0.55, we want to observe the outcome as the game series length change. In fact, we want the total length be a odd number, so that one team is able to win. we assume the game around could up to 99999. When the probability is equal to or more than 0.8, we find it as the shortest series length and probability for the shortest series.</p>
+<p>&emsp; As we know that the Pb needs to be 0.55, we want to observe the outcome as the game series length change. In fact, we want the total length be a odd number, so that one team is able to win. we assume the game around could up to 9999999. When the probability is equal to or more than 0.8, we find it as the shortest series length and probability for the shortest series.</p>
 
 ```{r}
-series_length <- seq(1, 99999, 2)
+series_length <- seq(1, 9999999, 2)
 for(i in 1:length(series_length)){
   Pb_win<-pnbinom(ceiling(series_length[i]/2)-1,ceiling(series_length[i]/2),0.55)
   if(Pb_win>=0.8){
@@ -90,12 +84,12 @@ shortest
  p_shortest
 ```
 
-<p>&emsp; Thus, We could find that the shortest series length so that P(Braves win World Series|PB=.55)≥0.8 will be 71, and the probibility of win here is 0.8017017
+<p>&emsp; Thus, We could find that the shortest series length so that P(Braves win World Series|PB=.55)≥0.8 will be 71, and the probability of win here is 0.8017017
 
 ***Question 4:What is the shortest series length so that P(Braves win World Series|Pb=x)≥0.8? This will be a figure (see below) with PB on the x-axis and series length is the y-axis.***
 <p>&emsp;Now were are able to find the required the shortest series length so that P(Braves win World Series|PB=.55)≥0.8. To draw to graph, we will also need the data frame for different Pb value. </p>
 
-<p>&emsp;The first thing here is to defind the variables we look for. First is the uncertain Pb and the another the shortest length based on each Pb. Thus, we will be able to have the following code.</p>
+<p>&emsp;The first thing here is to defined the variables we look for. First is the uncertain Pb and the another the shortest length based on each Pb. Thus, we will be able to have the following code.</p>
 ```{r}
 Pbseries <- seq(0.5,1, 0.01)
 Shortest_Record<- rep(NA,length(Pbseries))

@@ -8,7 +8,7 @@ output: html_document
 The blog is post to explain how to solve the birthday problem with both analytics and simulation tools. Assume that birthdays are equally likely to fall on any day of the year, ignoring leap year. A generated graph shows both solution for a range of possible classes, say 1 to 80 as in the figure shell below. Lets explain the detail one by one
 
 ***Analytics Solution***
-<p>&emsp;To find the probability that at least two students having same birthday, We can use 1- the porbability of no student having same birthday. Let start from a small size of class. If there is only one student in the class, the proability of a student's birthday, will be 365 or 365, which mean one can have any day in a regular year. Now, if we have two students, the probability of two unique birthday will be (365/365)(364/365)]. If we have three, the probability of three unique birthday class will be (365/365)(364/365)(363/365). With the idea will can assume that the prorbability of twenty unique birthday will be </p>
+<p>&emsp;To find the probability that at least two students having same birthday, We can use 1 minus the probability of no student having same birthday. Let's start from a small size of class. If there is only one student in the class, the probability of a student's birthday, will be 365 over 365, which mean one can have any day in a regular year. Now, if we have two students, the probability of two unique birthday will be (365/365)(364/365)]. If we have three, the probability of three unique birthday class will be (365/365)(364/365)(363/365). With the idea will can assume that the probability of twenty unique birthday will be </p>
 ```{r}
 factorial(20) * choose(365,20) / (365^20)
 ```
@@ -73,15 +73,15 @@ simulation.solution
 
 ```
 
-<p>&emsp; Now we are able to have all the data in the data frame. Here is the data frame
+<p>&emsp; Now we are able to have all the data in the data frame. Here is the data frame</p>
 
 ```{r}
 #data frame
 data<-data.frame(group.size,analytic.solution,simulation.solution)
 data
 ```
-
-<p>&emsp;With the data, we are able to have the grah via ggplot.
+***Visualization***
+<p>&emsp;With the data, we are able to have the graph via ggplot.</p>
 
 ```{r}
 #plot
@@ -95,4 +95,4 @@ g+labs(
 
 
 ***Solution***
-<p>&emsp;From the graph, we can find that the larger the size of group, the higher the probability at least one share the birthday. As the size achieved 60, the probility is almost approach 1. Both method solutionn have a closed solution. However, compare with the analytic solution, the simulation have a lower probility when the size of group is small. Its may because of the simulation times. 
+<p>&emsp;From the graph, we can find that the larger the size of group, the higher the probability at least one share the birthday. As the size achieved 60, the probability is almost approach 1. Both method solutions have a closed solution. However, compare with the analytic solution, the simulation have a lower probability when the size of group is small. Its may because of the simulation times. 
