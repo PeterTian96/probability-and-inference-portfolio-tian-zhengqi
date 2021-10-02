@@ -11,8 +11,8 @@ output:
 ***Background***
 After We find the probability of winning the world series, this time we want to discuss if the home advantage actually work. To find the outcome, we go back t he competition between Braves and Yankees. Bravers has the game advantage when the game played in Atlanta instead of New York City.
 
-Game location | No advantage | Advantage
-------------- | -------------|---------------------
+Game location | No advantage |      Advantage
+--------------|--------------|---------------------
        ATL    |     Pb       |PBH = PB $\times$ 1.1
        NYC    |     Pb       |PBA = 1 - (1 - PB)$\times$ 1.1
        
@@ -48,7 +48,6 @@ pba <- 1 - (1 - pb) * advantage_multiplier
 In this part, we will use the parameters we defined before. the following expressions help use to mimic each possible outcome and store data in the sheet. 
 
 ```{r}
-
 # the probability of each possible outcome
 apo[, p := NA_real_] # Initialize new column in apo to store prob
 for(i in 1:nrow(apo)){
@@ -63,7 +62,6 @@ for(i in 1:nrow(apo)){
   }
   apo[i, p := prod(prob_game)] # Data.table syntax
 }
-
 
 ```
 
@@ -133,11 +131,11 @@ for (i in seq(simulation.game.adv)){
 simulation.game.adv.mean <- mean(simulation.game.adv)
 simulation.game.adv.mean
 
-
 ```
 
 With both probability outcomes, now we are able to find the difference. The interest is that the simulation game wining without home advantage has a higher probability than siomulation gaming winning with home advantage does. The outcome is same with question 1.
 ```{r}
+
 simulation.game.mean-simulation.game.adv.mean
 
 ```
@@ -178,10 +176,10 @@ rel_error_simulation.game.adv
 ```
 
 ***Question four Does the difference in probabilities (with vs without home field advantage) depend on PB?***
-To answer the question, the first thing is to define PB. it is clear that Pb can be any number between 0 to 1. However, pb in 0 to 0.5 will be a mirror affect with pb in 0.5 to 1. Thus, we want to find all possible pb from 0.5 to 1 with 0.01 break. Here are 50 observations.
+To answer the question, the first thing is to define PB. it is clear that Pb can be any number between 0 to 1. pb in 0 to 0.5 will be a opposite mirror affect with pb in 0.5 to 1. However we have to exclude pb equals 1, because if pb equals 1, probbability of home advantage win will over 1. Thus, we want to find all possible pb from 0.5 to 9 with 0.001 break. Here are 50 observations.
 ```{r}
 #Setup the probability
-pb<- seq(0.5,1,0.01)
+pb<- seq(0.5,0.9,0.01)
 pb
 ```
 
@@ -240,22 +238,23 @@ Now we got our data!
 data<-data.frame(pb,p.home.adv.win,p.win,difference)
 data
 ```
-Thanks for ggplot! Now we are able to find the relationship between probability (with vs without home field advantage) and Pb. We can see that as Pb goes form 0.5 to 0.7, the probabilities of winning with home advantage will be higher tha the probability of winning without home advantage As pb goes form 0.7 to 1.0 the probabilities difference close to 0. Thus, we can find that when Pb is higher than 0.55, the fixed home field advantage will increase the probability of winning.
+Thanks for ggplot! Now we are able to find the relationship between probability (with vs without home field advantage) and Pb. We can see that as Pb goes form 0.5 to 0.7, the probabilities of winning with home advantage will be higher tha the probability of winning without home advantage As pb goes up from 0.7 to 0.9 the probabilities difference close to 0. Thus, we can find that when Pb is higher than 0.55, the fixed home field advantage will increase the probability of winning.
 ```{r}
 ggplot(data, aes(x=pb,y=difference))+geom_point()+
   theme_bw()+
+  geom_smooth()+
   labs(
     title="relationship between probabilities (with vs without home field advantage) and Pb",
     x="Pb rate",
     y="Probability difference"
   )
 ```
-***Question 5 Does the difference in probabilities (with vs without home field advantage) depend on the advantage factor? (The advantage factor in PBH and PBA is the 1.1 multiplier that results in a 10% increase for the home team. Generate a plot to answer this question.*)***
+***Question 5 Does the difference in probabilities (with vs without home field advantage) depend on the advantage factor? (The advantage factor in PBH and PBA is the 1.1 multiplier that results in a 10% increase for the home team. Generate a plot to answer this question.***
 
-The general idea here is similar with question 4. However, this time we will have pb=0.55, but a change home advantage multiplier. It the clear that home advangae multiplier has a range from 1 to 2. Thus, we are able to find all possible outcome for probability of winning with no home advantage, probability of wining with home advantage, and difference between two situation
+The general idea here is similar with question 4. However, this time we will have pb=0.55, but a change home advantage multiplier. It the clear that home advantage multiplier has a range from 1 to 2. However, we have to exclude 2 here, because once the advantage multiplier equals 2, the probability of win will over 1. Thus, we set the range from 1 to 1.8 and are able to find all possible outcome for probability of winning with no home advantage, probability of wining with home advantage, and difference between two situation
 
 ```{r}
-field.advantage <- seq(1,2,0.01)
+field.advantage <- seq(1,1.8,0.01)
 p.home.adv.win<- rep(NA,length(pb))
 p.win  <- rep(NA,length(pb))
 difference<- rep(NA,length(pb))
@@ -296,6 +295,7 @@ With ggplot we find that the higher field advantage rate will have a higher prob
 ```{r}
 ggplot(data, aes(x=field.advantage,y=difference))+geom_point()+
   theme_bw()+
+  geom_smooth()+
   labs(
     title="relationship between probabilities (with vs without home field advantage) and the advantage factor",
     x="Field Advantage Rate",
