@@ -105,8 +105,7 @@ simulation.game <- rep(NA, 10000)
 for (i in seq_along(simulation.game)){
   prob_game <- rep(NA,7)
   for(j in 1:7){
-    p_win <- 0.55
-    prob_game[j] <- rbinom(1,1,p_win)
+    prob_game[j] <- rbinom(1,1,0.55)
   }
   simulation.game[i] <- ifelse(sum(prob_game)>3, 1, 0)
 }
@@ -123,8 +122,7 @@ simulation.game.adv<- rep(NA, 10000)
 for (i in seq(simulation.game.adv)){
   prob_game <- rep(NA,7)
   for(j in 1:7){
-    p_win <- ifelse(hfi[j], pbh, pba)
-    prob_game[j] <- rbinom(1,1,p_win)
+    prob_game[j] <- rbinom(1,1,ifelse(hfi[j], pbh, pba))
   }
   simulation.game.adv[i] <- ifelse(sum(prob_game)>3, 1, 0)
 }
@@ -210,7 +208,7 @@ for (x in seq(pb)) {
   pba <- 1 - (1 - pb[x]) * advantage_multiplier
 
   # Calculate the probability of winning without home advantage
-  p.win [x] <- 1 - pbinom(3, 7, pb[x])
+  p.win [x] <- pnbinom(3, 4, pb[x])
 
   # Calculate the probability of winning with home advantage
   apo[, x := NA_real_] # Initialize new column in apo to store prob
@@ -267,7 +265,7 @@ for (x in seq(field.advantage)) {
   pbh <- 0.55 * advantage_multiplier
   pba <- 1 - (1 - 0.55) * advantage_multiplier
 
-  p.win [x] <- 1 - pbinom(3, 7, 0.55)
+  p.win [x] <- pnbinom(3, 4, 0.55)
 
   # Calculate the probability of each possible outcome
   apo[, x := NA_real_] # Initialize new column in apo to store prob
