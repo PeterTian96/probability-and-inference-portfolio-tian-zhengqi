@@ -215,7 +215,7 @@ pre code {
 <pre class="r"><code>library(ggplot2)
 # Load the file
 apo &lt;- fread(&quot;https://raw.githubusercontent.com/thomasgstewart/data-science-5620-fall-2021/master/deliverables/assets/all-possible-world-series-outcomes.csv&quot;)</code></pre>
-<p><strong><em>Question 1: Compute analytically the probability that the Braves win the world series when the sequence of game locations is {NYC, NYC, ATL, ATL, ATL, NYC, NYC}. Calculate the probability with and without home field advantage when PB = 0.55. What is the difference in probabilities?</em></strong></p>
+<p><strong><em>Question 1: Compute analytically the probability that the Braves win the world series when the sequence of game locations is {NYC, NYC, ATL, ATL, ATL, NYC, NYC}. (The code below computes the probability for the alternative sequence of game locations. Note: The code uses data.table syntax, which may be new to you. This is intentional, as a gentle way to introduce data.table.) Calculate the probability with and without home field advantage when PB = 0.55. What is the difference in probabilities?</em></strong></p>
 <p>To answer the first question,we need to define a sequence of game locations. based on the question, Brave will have game in {NYC, NYC, ATL, ATL, ATL, NYC, NYC}. We use 0 to represent NYC and 1 to represent ATL。</p>
 <pre class="r"><code># Home field indicator
 hfi &lt;- c(0,0,1,1,1,0,0) #{NYC, NYC, ATL, ATL, ATL, NYC, NYC}. </code></pre>
@@ -288,7 +288,7 @@ simulation.game.adv.mean</code></pre>
 <p>With both probability outcomes, now we are able to find the difference. The interest is that the simulation game wining without home advantage has a higher probability than siomulation gaming winning with home advantage does. The outcome is same with question 1.</p>
 <pre class="r"><code>simulation.game.mean-simulation.game.adv.mean</code></pre>
 <pre><code>## [1] 0.0052</code></pre>
-<p><strong><em>Question3: What is the absolute and relative error for your simulation in the previous question?</em></strong></p>
+<p><strong><em>Question 3: What is the absolute and relative error for your simulation in the previous question?</em></strong></p>
 <p>The definition of absolute error is : Absolute error = |p̂−p|</p>
 <p>Thus, we can find the absolute error between simulation winning without home advantage and analytic winning without home advantage</p>
 <pre class="r"><code>abs_error_simulation.game.adv &lt;-abs(simulation.game.mean-p.win)
@@ -304,10 +304,11 @@ abs_error_simulation.game.adv </code></pre>
 rel_error_simulation.game.adv</code></pre>
 <pre><code>## [1] 0.003786772</code></pre>
 <p>We can find the relative error between simulation winning with home advantage and analytic winning with home advantage</p>
-<pre class="r"><code>rel_error_simulation.game.adv &lt;- abs(simulation.game.adv.mean - p.home.adv.win)/simulation.game.mean
+<pre class="r"><code>rel_error_simulation.game.adv &lt;- abs(simulation.game.adv.mean - p.home.adv.win)/simulation.game.adv.mean
 rel_error_simulation.game.adv </code></pre>
-<pre><code>## [1] 0.001930934</code></pre>
-<p><strong><em>Question four Does the difference in probabilities (with vs without home field advantage) depend on PB?</em></strong> To answer the question, the first thing is to define PB. it is clear that Pb can be any number between 0 to 1. pb in 0 to 0.5 will be a opposite mirror affect with pb in 0.5 to 1. However we have to exclude pb equals 1, because if pb equals 1, probbability of home advantage win will over 1. Thus, we want to find all possible pb from 0.5 to 9 with 0.001 break. Here are 50 observations.</p>
+<pre><code>## [1] 0.00194752</code></pre>
+<p>We prefer to use relative error here.</p>
+<p><strong><em>Question 4: Does the difference in probabilities (with vs without home field advantage) depend on PB?</em></strong> To answer the question, the first thing is to define Pb. it is clear that Pb can be any number between 0 to 1. pb in 0 to 0.5 will be a opposite mirror affect with pb in 0.5 to 1. However we have to exclude pb equals 1, because if pb equals 1, probability of home advantage win will over 1. Thus, we want to find all possible pb from 0.5 to 9 with 0.001 break. Here are 50 observations.</p>
 <pre class="r"><code>#Setup the probability
 pb&lt;- seq(0.5,0.9,0.01)
 pb</code></pre>
@@ -331,16 +332,16 @@ difference </code></pre>
 <pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
 ## [26] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
 <p>Now we are able to find all observations in each pb. The following expression are similar wit question 1’s expression and idea.</p>
-<pre class="r"><code>for (p in seq(pb)) {
+<pre class="r"><code>for (x in seq(pb)) {
   advantage_multiplier &lt;- 1.1
-  pbh &lt;- pb[p] * advantage_multiplier
-  pba &lt;- 1 - (1 - pb[p]) * advantage_multiplier
+  pbh &lt;- pb[x] * advantage_multiplier
+  pba &lt;- 1 - (1 - pb[x]) * advantage_multiplier
 
   # Calculate the probability of winning without home advantage
-  p.win [p] &lt;- 1 - pbinom(3, 7, pb[p])
+  p.win [x] &lt;- 1 - pbinom(3, 7, pb[x])
 
   # Calculate the probability of winning with home advantage
-  apo[, p := NA_real_] # Initialize new column in apo to store prob
+  apo[, x := NA_real_] # Initialize new column in apo to store prob
   for(i in 1:nrow(apo)){
     prob_game &lt;- rep(1, 7)
     for(j in 1:7){
@@ -351,12 +352,12 @@ difference </code></pre>
         , TRUE ~ 1
       )
     }
-  apo[i, p := prod(prob_game)] # Data.table syntax
+  apo[i, x := prod(prob_game)] # Data.table syntax
   }
-  p.home.adv.win[p] &lt;- as.numeric(apo[, sum(p), overall_outcome][1,2])
+  p.home.adv.win[x] &lt;- as.numeric(apo[, sum(x), overall_outcome][1,2])
 
   # Calculate the difference
-  difference[p] &lt;- p.win [p] - p.home.adv.win[p]
+  difference[x] &lt;- p.win [x] - p.home.adv.win[x]
 }</code></pre>
 <p>Now we got our data!</p>
 <pre class="r"><code>data&lt;-data.frame(pb,p.home.adv.win,p.win,difference)
@@ -421,15 +422,15 @@ p.win  &lt;- rep(NA,length(pb))
 difference&lt;- rep(NA,length(pb))
 
 # Calculate the probability of winning without home advantage
-for (p in seq(field.advantage)) {
-  advantage_multiplier &lt;- field.advantage[p]
+for (x in seq(field.advantage)) {
+  advantage_multiplier &lt;- field.advantage[x]
   pbh &lt;- 0.55 * advantage_multiplier
   pba &lt;- 1 - (1 - 0.55) * advantage_multiplier
 
-  p.win [p] &lt;- 1 - pbinom(3, 7, 0.55)
+  p.win [x] &lt;- 1 - pbinom(3, 7, 0.55)
 
   # Calculate the probability of each possible outcome
-  apo[, p := NA_real_] # Initialize new column in apo to store prob
+  apo[, x := NA_real_] # Initialize new column in apo to store prob
   for(i in 1:nrow(apo)){
     prob_game &lt;- rep(1, 7)
     for(j in 1:7){
@@ -440,14 +441,13 @@ for (p in seq(field.advantage)) {
         , TRUE ~ 1
       )
     }
-  apo[i, p := prod(prob_game)] # Data.table syntax
+  apo[i, x := prod(prob_game)] # Data.table syntax
   }
-  p.home.adv.win[p] &lt;- as.numeric(apo[, sum(p), overall_outcome][1,2])
+  p.home.adv.win[x] &lt;- as.numeric(apo[, sum(x), overall_outcome][1,2])
   
 # Calculate the difference
-  difference[p] &lt;- p.win [p] - p.home.adv.win[p]
+  difference[x] &lt;- p.win [x] - p.home.adv.win[x]
 }
-
 
 data&lt;-data.frame(field.advantage,p.home.adv.win,p.win,difference)
 data</code></pre>
