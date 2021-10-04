@@ -245,7 +245,7 @@ ggplot(data, aes(x=pb,y=difference))+geom_point()+
   theme_bw()+
   geom_smooth()+
   labs(
-    title="relationship between probabilities and Pb",
+    title="relationship between probabilities and Pb difference",
     x="Pb rate",
     y="Probability difference"
   )
