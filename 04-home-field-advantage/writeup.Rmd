@@ -245,7 +245,7 @@ ggplot(data, aes(x=pb,y=difference))+geom_point()+
   theme_bw()+
   geom_smooth()+
   labs(
-    title="relationship between probabilities (with vs without home field advantage) and Pb",
+    title="relationship between probabilities and Pb",
     x="Pb rate",
     y="Probability difference"
   )
@@ -298,7 +298,7 @@ ggplot(data, aes(x=field.advantage,y=difference))+geom_point()+
   theme_bw()+
   geom_smooth()+
   labs(
-    title="relationship between probabilities (with vs without home field advantage) and the advantage factor",
+    title="relationship between probabilities and the advantage factor",
     x="Field Advantage Rate",
     y="Probability difference"
   )
