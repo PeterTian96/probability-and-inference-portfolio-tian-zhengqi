@@ -96,12 +96,13 @@ difference
 
 ***Question 2: Calculate the same probabilities as the previous question by simulation***
 
-Comparing with the analytic method used for question 1,  we will use simulation method for question two here. The general idea here is same. We will need to find the probabilities with home advantage and without home advantage for the difference. 
+Comparing with the analytic method used for question 1,  we will use simulation method for question two here. It is so true that the first question's expression is a great modeal to answer the question here. The general idea here is same. We need to find the probabilities with home advantage and without home advantage for the difference. 
 
-The following expression is a situation without home-field advantage influence. the general logic behind it is close to the analytic method. Thus for the most of part, it is close to the expression we just used to calculate each possible outcome. one major different is that we need stimulate the possible outcome out each game, define the win solution of each simulation, and calculate the mean simulation under 10000 running.
+The following expression is a situation without home-field advantage influence. the general logic behind it is close to the analytic method. Thus for the most of part, it is close to the expression we just used to calculate each possible outcome. Major differents is that we need stimulate the possible outcome each game, define the win solution of each simulation, and calculate the average simulation under 10000 running. Here we define the win situation is when Braver has more than three wins in each round. we record the win in the simulation and find ratio of total win over total game
 ```{r}
 set.seed(1)
-simulation.game <- rep(NA, 10000)
+test.size=10000
+simulation.game <- rep(NA, test.size)
 for (i in seq_along(simulation.game)){
   prob_game <- rep(NA,7)
   for(j in 1:7){
@@ -109,16 +110,16 @@ for (i in seq_along(simulation.game)){
   }
   simulation.game[i] <- ifelse(sum(prob_game)>3, 1, 0)
 }
-simulation.game.mean <- mean(simulation.game)
-simulation.game.mean
+simulation.game <- sum(simulation.game)/test.size
+simulation.game
 
 
 ```
-The following expression is a situation with home-field advantage influence. the general logic behind it is close to a situation without home-field advantage influence. at this time we need redefine the Pb win based on the home advantage table, and find the mean simulation under 10000 running.
+The following expression is a situation with home-field advantage influence. the general logic behind it is close to a situation without home-field advantage influence. at this time we need redefine the Pb win based on the home advantage table, and find the average simulation under 10000 running.
 
 ```{r}
 set.seed(1)
-simulation.game.adv<- rep(NA, 10000)
+simulation.game.adv<- rep(NA, test.size)
 for (i in seq(simulation.game.adv)){
   prob_game <- rep(NA,7)
   for(j in 1:7){
@@ -126,15 +127,15 @@ for (i in seq(simulation.game.adv)){
   }
   simulation.game.adv[i] <- ifelse(sum(prob_game)>3, 1, 0)
 }
-simulation.game.adv.mean <- mean(simulation.game.adv)
-simulation.game.adv.mean
+simulation.game.adv <- sum(simulation.game.adv)/test.size
+simulation.game.adv
 
 ```
 
 With both probability outcomes, now we are able to find the difference. The interest is that the simulation game wining without home advantage has a higher probability than siomulation gaming winning with home advantage does. The outcome is same with question 1.
 ```{r}
 
-simulation.game.mean-simulation.game.adv.mean
+simulation.game-simulation.game.adv
 
 ```
 
@@ -146,12 +147,12 @@ The definition of absolute error is : Absolute error = |p̂−p|
 Thus, we can find the absolute error between simulation winning without home advantage and analytic winning without home advantage
 
 ```{r}
-abs_error_simulation.game.adv <-abs(simulation.game.mean-p.win)
+abs_error_simulation.game.adv <-abs(simulation.game-p.win)
 abs_error_simulation.game.adv
 ```
 We can find the absolute error between simulation winning with home advantage and analytic winning with home advantage
 ```{r}
-abs_error_simulation.game.adv <- abs(simulation.game.adv.mean - p.home.adv.win)
+abs_error_simulation.game.adv <- abs(simulation.game.adv - p.home.adv.win)
 abs_error_simulation.game.adv 
 
 ```
@@ -162,13 +163,13 @@ The definition of relative error is : Relative error = |p̂−p|/p/.
 Thus, we can find the relative error between simulation winning without home advantage and analytic winning without home advantage
 ```{r}
 
-rel_error_simulation.game.adv <-abs(simulation.game.mean-p.win )/simulation.game.mean
+rel_error_simulation.game.adv <-abs(simulation.game-p.win )/simulation.game
 rel_error_simulation.game.adv
 
 ```
 We can find the relative error between simulation winning with home advantage and analytic winning with home advantage
 ```{r}
-rel_error_simulation.game.adv <- abs(simulation.game.adv.mean - p.home.adv.win)/simulation.game.adv.mean
+rel_error_simulation.game.adv <- abs(simulation.game.adv - p.home.adv.win)/simulation.game.adv
 rel_error_simulation.game.adv 
 
 ```
@@ -176,10 +177,10 @@ rel_error_simulation.game.adv
 We prefer to use relative error here.
 
 ***Question 4: Does the difference in probabilities (with vs without home field advantage) depend on PB?***
-To answer the question, the first thing is to define Pb. it is clear that Pb can be any number between 0 to 1. pb in 0 to 0.5 will be a opposite mirror affect with pb in 0.5 to 1. However we have to exclude pb equals 1, because if pb equals 1, probability of home advantage win will over 1. Thus, we want to find all possible pb from 0.5 to 9 with 0.001 break. Here are 50 observations.
+To answer the question, the first thing is to define Pb. it is clear that Pb can be any number between 0 to 1. pb in 0 to 0.5 will be a opposite mirror affect with pb in 0.5 to 1. However we have to exclude pb after 0.9 , because if pb is larger than 0.9, probability of home advantage win will over 1. Thus, we want to find all possible pb from 0.1 to 0.9 with 0.01 break. Here are 50 observations.
 ```{r}
 #Setup the probability
-pb<- seq(0.5,0.9,0.01)
+pb<- seq(0.1,0.9,0.01)
 pb
 ```
 
@@ -188,13 +189,13 @@ Now we are going to use analytic method to find all possible outcomes. Here we w
 ```{r}
 #probability of no home advantage win
 p.win<-rep(NA,length(pb))
-p.win
+
 #probability of home advantage win
 p.home.adv.win <- rep(NA,length(pb))
-p.home.adv.win
+
 #difference between two situationtg
 difference <- rep(NA,length(pb))
-difference 
+
 
 ```
 
@@ -238,7 +239,7 @@ Now we got our data!
 data<-data.frame(pb,p.home.adv.win,p.win,difference)
 data
 ```
-Thanks for ggplot! Now we are able to find the relationship between probability (with vs without home field advantage) and Pb. We can see that as Pb goes form 0.5 to 0.7, the probabilities of winning with home advantage will be higher tha the probability of winning without home advantage As pb goes up from 0.7 to 0.9 the probabilities difference close to 0. Thus, we can find that when Pb is higher than 0.55, the fixed home field advantage will increase the probability of winning.
+Thanks for ggplot! Now we are able to find the relationship between probability (with vs without home field advantage) and Pb. We can see that as Pb goes up from 0.1 to round 0.3, the difference goes up, meaning the home advantage is not helpful. however, the difference goes down to negative , when pb goes from 0.3 to 0.75, meaning that thhe home advatage will increase in win probability. Finally, the difference close to 0.
 ```{r}
 ggplot(data, aes(x=pb,y=difference))+geom_point()+
   theme_bw()+
@@ -251,7 +252,7 @@ ggplot(data, aes(x=pb,y=difference))+geom_point()+
 ```
 ***Question 5 Does the difference in probabilities (with vs without home field advantage) depend on the advantage factor? (The advantage factor in PBH and PBA is the 1.1 multiplier that results in a 10% increase for the home team. Generate a plot to answer this question.***
 
-The general idea here is similar with question 4. However, this time we will have pb=0.55, but a change home advantage multiplier. It the clear that home advantage multiplier has a range from 1 to 2. However, we have to exclude 2 here, because once the advantage multiplier equals 2, the probability of win will over 1. Thus, we set the range from 1 to 1.8 and are able to find all possible outcome for probability of winning with no home advantage, probability of wining with home advantage, and difference between two situation
+The general idea here is similar with question 4. However, this time we will have pb=0.55, but a change home advantage multiplier. It the clear that home advantage multiplier has a range from 1 to 2. However, we have to exclude any after 1.8 here, because once the advantage multiplier is larger than 1.8, the probability of win will over 1. Thus, we set the range from 1 to 1.8 and are able to find all possible outcome for probability of winning with no home advantage, probability of wining with home advantage, and difference between two situation
 
 ```{r}
 field.advantage <- seq(1,1.8,0.01)
@@ -259,15 +260,16 @@ p.home.adv.win<- rep(NA,length(pb))
 p.win  <- rep(NA,length(pb))
 difference<- rep(NA,length(pb))
 
-# Calculate the probability of winning without home advantage
+
 for (x in seq(field.advantage)) {
   advantage_multiplier <- field.advantage[x]
   pbh <- 0.55 * advantage_multiplier
   pba <- 1 - (1 - 0.55) * advantage_multiplier
-
+  
+# Calculate the probability of winning without home advantage
   p.win [x] <- pnbinom(3, 4, 0.55)
 
-  # Calculate the probability of each possible outcome
+# Calculate the probability of each possible outcome
   apo[, x := NA_real_] # Initialize new column in apo to store prob
   for(i in 1:nrow(apo)){
     prob_game <- rep(1, 7)
