@@ -256,9 +256,9 @@ The general idea here is similar with question 4. However, this time we will hav
 
 ```{r}
 field.advantage <- seq(1,1.8,0.01)
-p.home.adv.win<- rep(NA,length(pb))
-p.win  <- rep(NA,length(pb))
-difference<- rep(NA,length(pb))
+p.home.adv.win<- rep(NA,length(field.advantage))
+p.win  <- rep(NA,length(field.advantage))
+difference<- rep(NA,length(field.advantage))
 
 
 for (x in seq(field.advantage)) {
