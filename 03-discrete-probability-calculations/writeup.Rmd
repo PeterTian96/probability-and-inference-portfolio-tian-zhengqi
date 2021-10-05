@@ -1,4 +1,4 @@
-、---
+---
 title: "writeup"
 author: "Zhengqi Tian"
 date: "9/27/2021"
@@ -10,7 +10,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 ***Introduction***
-<p>&emsp; The world series is a best-of-7 match-up between the champions of the American and National Leagues of Major League Baseball. Suppose that the Braves and the Yankees are teams competing in the World Series and the probability that the Braves win is PB and the probability that the Yankees win is Py =1 − Pb. The blog is trying to explain each following questions in different situation. </p>
+<p>&emsp; Today, we are going to talking about the win probability in the baseball world series. The world series is a best-of-7 match-up between the champions of the American and National Leagues of Major League Baseball. Suppose that the Braves and the Yankees are teams competing in the World Series. 
+
+<p>&emsp;The question here is a classic binormal distribution situation. Let's assume that the the probability for the Braves win is PB and the probability for the Yankees win is Py =1 − Pb.The blog is trying to explain each following questions in different situation. </p>
 
 
 ***Question 1: What is the probability that the Braves win the World Series given that Pb= 0.55***
@@ -64,7 +66,7 @@ graph_question2+labs(
   theme_bw()+
   theme(plot.title=element_text(hjust=0.5))
 ```
-<p>&emsp; Based on the graph, we conclude that the higher the Pb, the higher probability of the Braves winning a head to head matchup games.</p>
+<p>&emsp; Based on the graph, we conclude that the higher the Pb, the higher probability of the Braves winning a head to head matchup games. We can see that there is a positive relationship here.</p>
 
 ***Question 3: Suppose one could change the World Series to be best-of-9 or some other best-of-X series. What is the shortest series length so that P(Braves win World Series|PB=.55)≥0.8***
 <p>&emsp; As we know that the Pb needs to be 0.55, we want to observe the outcome as the game series length change. In fact, we want the total length be a odd number, so that one team is able to win. To find the shortest path, we will trying to run multiple time to find the probability of the Braves winning a head to head matchup. We assume the game around could up to 9999999. When the probability is equal to or more than 0.8, we find it as the shortest series length and probability for the shortest series.</p>
@@ -124,10 +126,12 @@ graph_question4+labs(
   theme_bw()+
   theme(plot.title=element_text(hjust=0.5))
 ```
-<p>&emsp; In the graph, when Pb increase, the shortest series length is close to 1.When Pb is bigger than 0.8, the shortest series length is 1.</p>
+<p>&emsp; In the graph, when Pb increase, the shortest series length is close to 1.When Pb is bigger than 0.8, the shortest series length is 1.We can find that there is a negative relationship here. </p>
 
 ***Calculate P(PB=0.55|Braves win World Series in 7 games) under the assumption that either PB=0.55 or PB=0.45. Explain your solution.***
-<p>&emsp; To find the solution here, we need to use the idea of conditional probability and marginal probability in Bayes probability. P(PB=0.55|Braves win World Series in 7 games) =P(Braves win World Series in 7 games|PB=0.55) * P(PB=0.55) ÷ P(Braves win World Series in 7 games). With the idea, the next step is to calclualte each part one by one. </p>
+<p>&emsp; To find the solution here, we need to use the idea of conditional probability and marginal probability in Bayes probability. Based on Bayes probability rules,P(A| B) is a conditional probability, the probability of event A occurring given that B is true. P(B| A) is a conditional probability, the probability of event B occurring given that A is true.P(A) and P(B) are the probabilities of observing A and B respectively without any given conditions. The equation here is P(A|B)=P(B|A)*P(A)/P(B)
+
+<p>&emsp;P(PB=0.55|Braves win World Series in 7 games) =P(Braves win World Series in 7 games|PB=0.55) * P(PB=0.55) ÷ P(Braves win World Series in 7 games). With the idea, the next step is to calculate each part one by one. </p>
 
 <p>&emsp; First, we are able to use dnbinom() calculate P(Braves win World Series in 7 games) and P(Braves win World Series in 7 games|PB=0.55). </p>
 
