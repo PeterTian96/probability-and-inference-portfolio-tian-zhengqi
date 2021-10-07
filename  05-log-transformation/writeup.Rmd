@@ -1,0 +1,484 @@
+---
+title: "writeup"
+author: "Zhengqi Tian"
+date: "10/6/2021"
+output: html_document
+---
+# Introduction 
+The blog is trying to explan each distribution question with both analytic methods and simulation. 
+
+#  Part 1
+The first question is explore 3 different type of distribution, including gamma, log normal and uniform distributions. For each disribution, we try to answer the following question:
+- For each distribution below, generate a figure of the PDF and CDF. Mark the mean and median in the figure.
+
+- For each distribution below, generate a figure of the PDF and CDF of the transformation Y = log(X) random variable. Mark the mean and median in the figure. You may use simulation or analytic methods in order find the PDF and CDF of the transformation.
+
+- For each of the distributions below, generate 1000 samples of size 100. For each sample, calculate the geometric and arithmetic mean. Generate a scatter plot of the geometic and arithmetic sample means. Add the line of identify as a reference line.
+
+- Generate a histogram of the difference between the arithmetic mean and the geometric mean.
+
+Now we are going explore these questions one by one 
+
+##Distribution 1 Gamma- X ∼ GAMMA(shape = 3, scale = 1)
+
+In probability theory and statistics, the gamma distribution is a two-parameter family of continuous probability distributions.  Thus we are able to generate a figure of the PDF and CDF.based on the backgrou information, we know there shape equal 3 and scale is 1. for the range here, we set it from 0 to 20, as negative ranges are not helpful for gamma distribnution. Mark the mean and median in the figure.
+
+```{r}
+#gamma  
+gamma.shape <- 3
+gamma.scale <- 1
+range<-seq(0,20,0.1)
+
+```
+We also try to mark the mean and median in the figure. The function of gamma distribution mean is:
+mean= gamma shaple/ gamma scale. for median, we looking for the 0.5 quantile of gamma distribution.
+```{r}
+#mean
+gamma.mean <- gamma.shape / gamma.scale
+gamma.mean
+#median
+gamma.median <- qgamma(0.5, shape = gamma.shape, scale = gamma.scale)
+gamma.median
+```
+To find the PDF here, we will use dgamma() function to create gamma density plot. The yellow line is the mean, and blue line is the median.  
+
+```{r}
+#PDF
+gamma_pdf<-dgamma(range, shape = gamma.shape, scale = gamma.scale)
+#Gamma PDF Graph
+plot(range,gamma_pdf,type="l",main="Gamma PDF",xlab="Gamma Range",ylab="Gamma Density")
+abline(v = gamma.mean, col = "Yellow")
+abline(v=gamma.median,col="Blue")
+legend("topright",legend = c("Mean","Median"), col = c("Yellow","Blue"), lty=1)
+```
+From the gamma PDF, the gamma density rises up from zero to somewhere around 2.5 and goes down to zero after it. We can can find that the median is smaller than the mean. When x above 10, the gamma density close to zero.
+
+For the gamma CDF, we need to find the cumulative gamma probability by using pgamma(). The yellow line is the mean, and blue line is the median.
+```{r}
+#CDF
+gamma_cdf<-pgamma(range, shape = gamma.shape, scale = gamma.scale)
+#Gamma CDF Graph
+plot(range,gamma_cdf,type="l",main="Gamma CDF",xlab="Gamma Range",ylab="Gamma probability")
+abline(v = gamma.mean, col = "Yellow")
+abline(v=gamma.median,col="Blue")
+legend("topright",legend = c("Mean","Median"), col = c("Yellow","Blue"), lty=1)
+
+
+```
+The gamma cumulative probability rises up from zero and achieve 1.0 when it close to 10. We can can find that the median is smaller than the mean.
+
+Now, we generate a figure of the PDF and CDF of the transformation Y = log(X) random variable. The first thing here is to find the log(x) value. we use simulation method and set sample equals 10000. 
+```{r}
+#gamma Y = log(X) random variable
+
+#log(x)
+x<-rgamma(10000, shape = gamma.shape, scale = gamma.scale)
+logx<-log(x)
+```
+Then, we need to take log transformtion of gamma mean and media
+```{r}
+#calculating the mean and median
+log.gamma.mean <- log(gamma.shape/gamma.scale)
+log.gamma.mean
+log.gamma.median <- log(qgamma(0.5, gamma.shape, gamma.scale))
+log.gamma.median
+```
+We can find the the log gamma mean is still larger than log gamma median. 
+
+Different from using dgamma to find the density, we use histogram graph to stimulate the density distribution for PDF.We can find that the density rise up from -2 to 1.5 and goes down. Here we can also find the normal distribution here as log(x)  equials -1 to 2. 
+
+```{r}
+#Gamma Y=log(x) PDF Graph
+hist(logx,main="Histogram of Gamma Y=log(x) PDF", xlab="Log(x)",ylab="Density")
+abline(v = log.gamma.mean, col = "Yellow")
+abline(v = log.gamma.median, col = "Blue")
+legend("topright",legend = c("Mean","Median"), col = c("Yellow","Blue"), lty=1)
+
+```
+To generate the log(x) CDF here, we using ecdf() for cumulative probability here. 
+```{r}
+#creating the log gamma cdf
+plot(ecdf(logx), main = "Gamma Y=log(x) CDF", xlab = "Log(x)" , ylab = "Probability")
+abline(v = log.gamma.mean, col = "Yellow")
+abline(v = log.gamma.median, col = "Blue")
+legend("bottomright",legend = c("Mean","Median"), col = c("Yellow","Blue"), lty=1)
+
+```
+This CDF is similar to the normal distribution as the log(x) between -1 and 2. Here the mean is larger tha medina. 
+
+The next step is to find the relationship between arithmetic and geometic sample means. Arithmetic mean is often referred to as the mean or arithmetic average. The geometric mean is a mean or average, which indicates the central tendency or typical value of a set of numbers by using the product of their values. with simulation we can have the mean of gamma distribution sample for arithemetic mean, and applying exponential function for geometric mean here. 
+```{r}
+#gamma generate 1000 samples of size 100 geometric and arithmetic mean
+
+#Arithmetic and geometric sample mean
+Arithmetic.mean = NA
+Geometric.mean = NA
+
+for (i in 1:1000){
+  sample <- rgamma(100, shape = gamma.shape, scale = gamma.scale)
+  Arithmetic.mean[i] <- mean(sample)
+  Geometric.mean[i] <- exp(mean(log(sample)))
+}
+```
+
+```{r}
+#Generate a scatter plot of the geometric and arithmetic sample means. Add the line of identify as a reference line.
+plot(Arithmetic.mean,Geometric.mean, main = "Relationship Between the Arithmetic and the Geometric Mean",xlab = "Arithmetic Mean", ylab = "Geometric Mean")
+abline(a=0,b=1)
+legend("bottomright", legend = c("Line of Identity"),lty = 1)
+```
+from the plot, we can find a postie relationship between the arithmetic mean and the geometric mean. 
+
+```{r}
+#difference between the arithmetic mean and the geometric mean
+difference<-Arithmetic.mean-Geometric.mean
+
+#Generate a histogram of the difference between the arithmetic mean and the geometric mean.
+hist(difference, main = "Difference between the arithmetic mean and the geometric mean",xlab = "Difference between the arithmetic mean and the geometric mean")
+```
+From the histgram here, we try to understand the distribution of the difference between the arithmetic mean and the geometric mean. We can find there is a normal distribution here. As the difference is always larger than zeroe, it implies that the arithmetic mean is larger than geometric mean. 
+
+##Distribution 2 X ∼ LOG NORMAL(μ =  − 1, σ = 1)
+Now, we are going to analysis the log normal distribution. The log normal distribution is a continuous probability distribution of a random variable whose logarithm is normally distributed. the mean *μ* is 1 and the standard deviation *σ* is 1. the log norm range here is from 0 to 10
+```{r}
+#Log normal
+meanlog<--1
+sdlog<- 1
+
+#range
+lnorm.range<-seq(0,10,0.01)
+```
+For log normal distribution mean, we use mean = exp(μ + σ/2) here. For log normal distribution median, we apply 0.5 quantile qlnorm() function to find it. 
+```{r}
+#mean
+lnorm.mean <- exp(meanlog + (sdlog ^ 2) / 2)
+lnorm.mean
+#median
+lnorm.median <- qlnorm(0.5, meanlog, sdlog)
+lnorm.median
+```
+We find that the log normal mean here is larger than log normal median. 
+
+
+To find the log normal distribution PDF, we use dlnorm() to find the density. The mean here is yellow line and median here is blue line
+```{r}
+#PDF Log normal
+lnorm_pdf<-dlnorm(lnorm.range, meanlog, sdlog)
+#log normal pdf Graph
+plot(lnorm.range,lnorm_pdf,type="l",main="log normal PDF",xlab="log norm Range",ylab="log norm Density")
+abline(v=lnorm.mean, col = "Yellow")
+abline(v=lnorm.median,col="Blue")
+legend("topright",legend = c("Mean","Median"), col = c("Yellow","Blue"), lty=1)
+```
+The PDf Plot here is similar to the gamma PDF plot. But the change in density is more rapidly than gamma PDF has. As we mentioned above, the mean is larger than median.
+
+To find the log normal distribution CDF, we use plnorm() to find the cumulative probability.
+```{r}
+#CDF Log normal
+lnorm_cdf<-plnorm(lnorm.range, meanlog, sdlog)
+#log normal cdf Graph
+plot(lnorm.range,lnorm_cdf,type="l",main="log normal CDF",xlab="log norm Range",ylab="log norm Probability")
+abline(v=lnorm.mean, col = "Yellow")
+abline(v=lnorm.median,col="Blue")
+legend("bottomright",legend = c("Mean","Median"), col = c("Yellow","Blue"), lty=1)
+```
+The CDF here is also close to gamma distribution's CDF. the probability rises from 0 when log norm is 0 to 1 when log norm close to 2.
+
+Similar to gamma distribution stimulation, we can also have a simulation to generate a figure of the PDF and CDF of the transformation Y = log(X) random variable for log normal distribution. We set the n equals 10000 as well. We can also find the log mean and log median.
+```{r}
+#Log normal-Y = log(X)
+ln<-rlnorm(10000,meanlog,sdlog)
+logln<-log(ln)
+
+#Log mean
+log.lnorm.mean <-log(lnorm.mean)
+log.lnorm.mean
+#Log median
+log.lnorm.median <- log(lnorm.median)
+log.lnorm.median
+```
+We find that the mean is larger than median.
+```{r}
+#generate a figure of the PDF of the transformation Y = log(X) random variable.
+hist(logln, main = "PDF of the transformation Y = log(X) random variable", xlab = "X Range of Values", ylab = "Density")
+abline(v=lnorm.mean, col = "Yellow")
+abline(v=lnorm.median,col="Blue")
+legend("topright",legend = c("Mean", "Median"), col = c("Yellow","Blue"), lty=1)
+```
+From the plot, we can find that the PDF of the log normal distribution has a normal distribution log transformation. so plot is very close to the PDF of the gamma distribution log transformation. Now, we are going to use cumulative probability function ecdf() to find the CDF of the log transformation. 
+
+```{r}
+#generate a figure of the CDF of the transformation Y = log(X) random variable.
+plot(ecdf(logln), main = "CDF of the transformation Y = log(X) random variable", xlab = "Log(x)")
+abline(v = log.lnorm.mean, col = "Yellow")
+abline(v = log.lnorm.median, col = "Blue")
+legend("bottomright",legend = c("Log Mean","Log Median"), col = c("Yellow","Blue"), lty=1)
+
+```
+
+The CDF is close to a normal distribution. Additionally, the plot is very close to the CDF of the gamma distribution log. Here the mean is larger than median.
+
+
+The next step is to find the relationship between arithmetic and geometric sample means. The idea is close to the gamma distribution question. We will apply simulation to find the arithmetic and geometric sample mean
+```{r}
+#Log normal-generate 1000 samples of size 100. For each sample, calculate the geometric and arithmetic mean
+
+#Arithmetic and geometric sample mean
+ln.Arithmetic.mean = NA
+ln.Geometric.mean = NA
+
+for (i in 1:1000){
+  ln.sample <- rlnorm(100, meanlog,sdlog)
+  ln.Arithmetic.mean[i] <- mean(ln.sample)
+  ln.Geometric.mean[i] <- exp(mean(log(ln.sample)))
+}
+```
+
+```{r}
+#Generate a scatter plot of the geometric and arithmetic sample means. Add the line of identify as a reference line.
+plot(ln.Arithmetic.mean,ln.Geometric.mean, main = "Relationship Between the Arithmetic and the Geometric Mean",xlab = "Arithmetic Mean", ylab = "Geometric Mean")
+abline(a=0,b=1)
+legend("bottomright", legend = c("Line of Identity"),lty = 1)
+```
+
+From the scatter plot, we can also find a positive relationship between the arithmetic mean and the geomentric mean. However compare with gamma distribution's mean scatter plot, log normal distribution has a weaker relationship. 
+```{r}
+#difference between the arithmetic mean and the geometric mean
+ln.difference<-ln.Arithmetic.mean-ln.Geometric.mean
+
+#Generate a histogram of the difference between the arithmetic mean and the geometric mean.
+hist(ln.difference, main = "histogram of the difference between the arithmetic mean and the geometric mean",xlab = "difference between the log norm arithmetic mean and the log norm geometric mean")
+```
+Here are still can have a normally distribution different histogram. However, campare with gamma distribution, the histogram here has more tails when the difference is larger than 0.3.It makes sense as the relationship between arithmetic and the geometric mean is weaker for log normal distribution than for gamma distribution.
+
+
+## Distribution 3: X ∼ UNIFORM(0, 12)
+The uniform distribution is a continuous distribution that has a family of symmetric probability distributions. here is min is 0 and max is 12. we set the range from -1 to 13 so that we can observe everything fomr 0 to 12.
+
+```{r}
+#Uniform distribution
+min<-0
+max<-12
+uni.range<-seq(-1,13,0.01)
+```
+To find the mean, we use (min+max)/2. To find the median, we use 0.5 quantile for qunif() function.
+```{r}
+#Mean
+unif.mean<-(min+max)/2
+unif.mean
+#median
+unif.median<-qunif(0.5, min, max)
+unif.median
+```
+We can find that the mean is same with median.
+
+To find uniform normal distribution PDF, we use dunif() to find the density. The mean here is yellow line and median here is blue line
+```{r}
+#PDF uniform normal distribution
+unif_pdf<-dunif(uni.range, min, max)
+#Uniform pdf Graph
+plot(uni.range,unif_pdf,type="l",main="Uniform PDF",xlab="Uniform Range",ylab="Uniform Density")
+abline(v=unif.mean, col = "Yellow")
+abline(v=unif.median,col="Blue")
+legend("topright",legend = c("Uniform Mean","Uniform median"), col = c("Yellow","Blue"), lty=1)
+
+```
+From the plot, we can fint the density is same between 0 and 12. the mean here is same with median.
+To find uniform normal distribution CDF, we use punif() to find the cumulative probability. The mean here is yellow line and median here is blue line
+```{r}
+#CDF uniform normal distribution
+unif_cdf<-punif(uni.range, min, max)
+#Uniform pdf Graph
+plot(uni.range,unif_cdf,type="l",main="Uniform CDF",xlab="Uniform Range", ylab="Uniform probability")
+abline(v=unif.mean, col = "Yellow")
+abline(v=unif.median,col="Blue")
+legend("bottomright",legend = c("Uniform Mean","Uniform median"), col = c("Yellow","Blue"), lty=1)
+
+```
+Different from the previous two distributions, the probability increase as the range rise up.
+
+Similar to previous two distributions, we can also have a simulation to generate a figure of the PDF and CDF of the transformation Y = log(X) random variable for uniform distribution. We set the n equals 10000 as well. We can also find the log mean and log median.
+
+```{r}
+#Uniform distribution-Y = log(X) random variable
+unif<-runif(10000,min,max)
+logunif<-log(unif)
+
+#mean 
+
+log.unif.mean<-log(unif.mean)
+log.unif.mean
+#median
+
+log.unif.median<-log(unif.median)
+log.unif.median
+```
+The mean here is same as median. 
+
+```{r}
+#generate a figure of the PDF of the transformation Y = log(X) random variable.
+hist(logunif,main = "PDF of the Uniform Distribution", xlab = "log(x) Range", ylab = "Density")
+abline(v = log.unif.mean, col = "Yellow")
+abline(v = log.unif.median, col = "Blue")
+legend("topleft",legend = c("Log uniform Median", "Log uniformMean"), col = c("Yellow","Blue"), lty=1)
+
+```
+Different from the previous two distributions, there is no normal distrubtion for the log transformation of the unifomr distribution. 
+
+```{r}
+#generate a figure of the CDF of the transformation Y = log(X) random variable under uniform distribution.
+plot(ecdf(logunif), main = "CDF of the transformation Y = log(X) random variable under uniform distribution", xlab = "range",ylab="Probability")
+abline(v = log.unif.mean, col = "Yellow")
+abline(v = log.unif.median, col = "Blue")
+legend("topleft",legend = c("Log uniform Median", "Log uniformMean"), col = c("Yellow","Blue"), lty=1)
+
+```
+Similar to CDF of log transformation of the uniform distribution, there is no normal distribution here. the probability increase from zero to one as the range increase from -10 to 2.
+
+Next, let find the relationship between arithmetic and geometric sample mean. The simulation method here is same. we can have the scatter plot for the relationship between arithmetic and geometric sample mean and histogram for difference between the arithmetic mean and the geometric mean.
+
+```{r}
+#Uniform -generate 1000 samples of size 100. For each sample, calculate the geometric and arithmetic mean
+
+#Arithmetic and geometric sample mean
+unif.Arithmetic.mean = NA
+unif.Geometric.mean = NA
+
+for (i in 1:1000){
+  unif.sample <- runif(100, min,max)
+  unif.Arithmetic.mean[i] <- mean(unif.sample )
+  unif.Geometric.mean[i] <- exp(mean(log(unif.sample)))
+}
+
+#Generate a scatter plot of the geometric and arithmetic sample means. Add the line of identify as a reference line.
+plot(unif.Arithmetic.mean,unif.Geometric.mean, main = "Relationship Between the Arithmetic and the Geometric Mean",xlab = "Uniform Arithmetic Mean", ylab = "Uniform Geometric Mean")
+abline(a=0,b=1)
+legend("bottomright", legend = c("Line of Identity"),lty = 1)
+
+#difference between the arithmetic mean and the geometric mean
+unif.difference<-unif.Arithmetic.mean-unif.Geometric.mean
+
+#Generate a histogram of the difference between the arithmetic mean and the geometric mean.
+hist(unif.difference, main = "histogram of the difference between the arithmetic mean and the geometric mean",xlab = "difference between the uniform arithmetic mean and uniform geometric mean")
+```
+
+Here, we can find that there is a psotive relationship between arithmetic and geometric sample mean. all the difference is larger than 0 and has a normal distribution.
+
+
+
+#Part 2
+
+There question discuss if Xi > 0 for all i, then the arithmetic mean is greater than or equal to the geometric mean. To anser the question, we need have a simulation for each of the distribution and find out the clue. 
+
+```{r}
+arithmetic_mean <- NA
+geometric_mean <- NA
+
+```
+
+##Gamma Situation
+
+```{r}
+for(i in 1:10000) {
+    sample = rgamma(100,3,1)
+    arithmetic_mean[i] = mean(sample)
+    geometric_mean[i] = exp(mean(log(sample)))
+}
+
+plot(arithmetic_mean, geometric_mean, main = 'Relationship Between the Arithmetic and the Geometric Mean - Gamma')
+
+hist(arithmetic_mean-geometric_mean, main= "Difference between the arithmetic mean and the geometric mean")
+```
+
+Here we can find that the difference between arithmetic mean is always larger than 0. there is a positive relationship between arithmetic mean and the geometric mean.
+
+##Log normal
+```{r}
+for(i in 1:10000) {
+    sample = rlnorm(100,-1,1)
+    arithmetic_mean[i] = mean(sample)
+    geometric_mean[i] = exp(mean(log(sample)))
+}
+
+plot(arithmetic_mean, geometric_mean, main = "Scatterplot of Arithmetic vs Geometric Means - log norm")
+
+hist(arithmetic_mean-geometric_mean, main= "Difference between the arithmetic mean and the geometric mean")
+
+```
+Here we can find that the difference between arithmetic mean is always larger than 0. there is a positive relationship between arithmetic mean and the geometric mean 
+
+
+## uniform Situation
+```{r}
+
+for(i in 1:10000) {
+    sample = runif(100, min = 0, max = 12)
+    arithmetic_mean[i] = mean(sample)
+    geometric_mean[i] = exp(mean(log(sample)))
+}
+
+plot(arithmetic_mean, geometric_mean, main = "Scatterplot of Arithmetic vs Geometric Means - uniform Situation")
+
+
+hist(arithmetic_mean-geometric_mean, main= "Difference between the arithmetic mean and the geometric mean")
+```
+Here we can find that the difference between arithmetic mean is always larger than 0. there is a positive relationship between arithmetic mean and the geometric mean 
+
+As applying all three distributions will have a siliar result, we can say that f Xi > 0 for all i, then the arithmetic mean is greater than or equal to the geometric mean.
+
+
+#Part 3
+
+In Part 3, we want to explore what the correct relationship between E[log (X)] and log (E[X])is. To anser the qestuetion, we can apply same strategy for Part 2, stimulating each distribution and comparing the outcome. 
+
+```{r}
+e_log <- NA
+log_e <- NA
+```
+##Gamma distribution
+```{r}
+for(i in 1:10000) {
+    data = rgamma(1000, 3,1)
+    e_log[i] = mean(log(data))
+    log_e [i] = log(mean(data))
+}
+
+plot(e_log, log_e, main = "elationship between E[log(X)] vs log(E[X]) - Gamma")
+
+hist(e_log-log_e,main = "Difference Between E[log(x)] and log(E[x])",xlab="Difference")
+```
+there is a positive relationship between E[log (X)] and log (E[X]). As the difference is always less than zero, we know that log(E[X]) is larger than E[log(X)]
+
+
+Log normal
+```{r}
+for(i in 1:10000) {
+    data = rlnorm(1000, -1,1)
+    e_log[i] = mean(log(data))
+    log_e [i] = log(mean(data))
+}
+
+plot(e_log, log_e, main = "elationship between E[log(X)] vs log(E[X]) - Gamma")
+abline(0,1)
+
+hist(e_log-log_e,main = "Difference Between E[log(x)] and log(E[x])",xlab="Difference")
+```
+there is a positive relationship between E[log (X)] and log (E[X]).As the difference is always less than zero, we know that log(E[X]) is larger than E[log(X)]
+
+
+Uniform
+```{r}
+for(i in 1:10000) {
+    data = runif(1000, 0, 12)
+    e_log[i] = mean(log(data))
+    log_e [i] = log(mean(data))
+}
+
+plot(e_log, log_e, main = "elationship between E[log(X)] vs log(E[X]) - Gamma")
+
+
+hist(e_log-log_e,main = "Difference Between E[log(x)] and log(E[x])",xlab="Difference")
+```
+there is a positive relationship between E[log (X)] and log (E[X]).As the difference is always less than zero, we know that log(E[X]) is larger than E[log(X)]
+
+As applying all three distributions will have a siliar result, we can say that there is a positive relationship between E[log (X)] and log (E[X]). log(E[X]) is larger than E[log(X)]
