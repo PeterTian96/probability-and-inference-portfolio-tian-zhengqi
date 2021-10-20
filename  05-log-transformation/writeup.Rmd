@@ -89,7 +89,7 @@ Different from using dgamma to find the density, we use histogram graph to stimu
 
 ```{r}
 #Gamma Y=log(x) PDF Graph
-hist(logx,main="Histogram of Gamma Y=log(x) PDF", xlab="Log(x)",ylab="Density")
+plot(density(logx),main="Histogram of Gamma Y=log(x) PDF", xlab="Log(x)",ylab="Density")
 abline(v = log.gamma.mean, col = "Yellow")
 abline(v = log.gamma.median, col = "Blue")
 legend("topright",legend = c("Mean","Median"), col = c("Yellow","Blue"), lty=1)
@@ -200,7 +200,7 @@ log.lnorm.median
 We find that the mean is larger than median.
 ```{r}
 #generate a figure of the PDF of the transformation Y = log(X) random variable.
-hist(logln, main = "PDF of the transformation Y = log(X) random variable", xlab = "X Range of Values", ylab = "Density")
+plot(density(logln), main = "PDF of the transformation Y = log(X) random variable", xlab = "X Range of Values", ylab = "Density")
 abline(v=lnorm.mean, col = "Yellow")
 abline(v=lnorm.median,col="Blue")
 legend("topright",legend = c("Mean", "Median"), col = c("Yellow","Blue"), lty=1)
@@ -317,7 +317,7 @@ The mean here is same as median.
 
 ```{r}
 #generate a figure of the PDF of the transformation Y = log(X) random variable.
-hist(logunif,main = "PDF of the Uniform Distribution", xlab = "log(x) Range", ylab = "Density")
+plot(density(logunif),main = "PDF of the Uniform Distribution", xlab = "log(x) Range", ylab = "Density")
 abline(v = log.unif.mean, col = "Yellow")
 abline(v = log.unif.median, col = "Blue")
 legend("topleft",legend = c("Log uniform Median", "Log uniformMean"), col = c("Yellow","Blue"), lty=1)
@@ -474,7 +474,7 @@ for(i in 1:10000) {
     log_e [i] = log(mean(data))
 }
 
-plot(e_log, log_e, main = "elationship between E[log(X)] vs log(E[X]) - Gamma")
+plot(e_log, log_e, main = "Relationship between E[log(X)] vs log(E[X]) - Gamma")
 
 
 hist(e_log-log_e,main = "Difference Between E[log(x)] and log(E[x])",xlab="Difference")
