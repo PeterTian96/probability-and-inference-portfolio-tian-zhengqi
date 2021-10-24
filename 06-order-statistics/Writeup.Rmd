@@ -83,7 +83,7 @@ ecdf <- ecdf(simulation.median)
 plot(ecdf, do.points = F, col = "Red", lwd = 3, main = "ECDF and CDF of Sampling Distribution For The Median",xlab = parse(text="X[(100)]"))
 curve(porder(x), add = T, col = "blue", lwd = 3)
 legend(
-  "topleft", 
+  "bottomright", 
   c("ECDF", "CDF"),
   lwd = 3, 
   col = c("Red", "blue")
@@ -95,7 +95,7 @@ legend(
 
 Here, we are trying to compare the simulation density with theoretical density. We will use the simulation result from the previous questions. From the plot, we are able to have a very close result. The median is close to 0.
 ```{r}
-hist(simulation.median, breaks = 100, freq = F,main= "Histogram and Density of Simulated Sampling Distribution",xlab = parse(text="X[(100)]"))
+hist(simulation.median,freq = F,main= "Histogram and Density of Simulated Sampling Distribution",xlab = parse(text="X[(100)]"))
 curve(dorder(x), add = T)
 ```
 
@@ -139,7 +139,7 @@ dorder <- function(x,k){
 # porder
 porder <- function(x,k){
   n=200
-  pbinom(k-1, n, pnorm(x), lower.tail = FALSE)
+  pbinom(k-1, n, pnorm(x), lower.tail = F)
 }
 
 # qorder
@@ -205,7 +205,7 @@ qorder <- function(p, k){
   
   n <- 200
   for(i in seq_along(p)){
-    med_dis[i] <- uniroot(function(x, y) porder(x, k, ...)-p[i], c(-5,5))$root
+    med_dis[i] <- uniroot(function(x, y) porder(x, k, ...)-p[i], c(-10,10))$root
   }
   med_dis
 }
@@ -218,7 +218,7 @@ Here, we try to find the density for sample min. Sample min here is 1. From the 
 curve(dorder(x, k = 1, dist = "norm"), -5, 5, xlab = parse(text="X[(1)]"), ylab = "Density", main= "PDF of the Normal Distribution For Min")
 ```
 
-Here, we try to find the probability for sample min. Sample min here is 1. From the plot, we find the min is between -2 and -4. the result is same with denisty result.
+Here, we try to find the probability for sample min. Sample min here is 1. From the plot, we find the min is between -2 and -4. the result is same with density result.
 ```{r}
 curve(porder(x, k = 1, dist = "norm"), -5, 5, xlab = parse(text="X[(1)]"), ylab = "Probability", main= "CDF of the Normal Distribution For Min")
 ```
