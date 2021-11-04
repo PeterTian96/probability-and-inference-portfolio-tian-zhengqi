@@ -1,4 +1,4 @@
----
+ok---
 title: "Writeup"
 author: "Zhengqi Tian"
 date: "10/20/2021"
@@ -11,7 +11,7 @@ In this post, we are going to talk about the distribution fo order statistic. Th
 
 **Questions1:** Begin with the median from a sample of N = 200 from the standard normal distribution. Write an R function that is the density function for the median in this sample. Note that the 100th order statistic is approximately the median, and use the order statistic formula discussed in class. Generate a plot of the function.
 
-To answer the question, we are looking to to find density distribution and PDF plot for the standard normal distribution. As a sample of N is 200, the median here is 100. From the graph, we can find that the median is close to 0.
+To answer the question, we are looking to to find density distribution and PDF plot for the standard normal distribution. As a sample of N is 200, the median here is 100.Here we try to have a one variable function. As we look for PDF, we will use function dnrom() here. From the graph, we can find that the median is close to 0. Then range is from -0.5 to 0.5.
 
 ```{r}
 
@@ -33,7 +33,7 @@ curve(dorder(x), -1, 1,main = "PDF of the Normal Distribution For The Median", x
 
 **Questions2:** Write an R function that is the probability function for the median in this sample. Use the order statistic formula discussed in class. Generate a plot of the function.
 
-To answer the question, we are looking to to find  probability distribution and CDF plot for the standard normal distribution. As a sample of N is 200, the median here is 100. From the graph, we can find that the median is close to 0. The result is close to PDF reuslt.
+To answer the question, we are looking to to find  probability distribution and CDF plot for the standard normal distribution. As a sample of N is 200, the median here is 100. As we are looking for CDF, we will use pbinom() function and pnorm() here. From the graph, we can find that the median is close to 0. The rane is from -0.25 to 0.25 The result is close to PDF result.
 
 
 ```{r}
@@ -48,7 +48,7 @@ curve(porder(x), -1, 1, main = "CDF of the Normal Distribution For The Median", 
 
 **Questions3:**  Write an R function that is the quantile function for the median in this sample. (You have several options for how to write this function.) Generate a plot of the function.
 
-To answer the question, we are trying to find the inverse of the probability function. Uniroot is a good expression to find the outcome. From the graph, we can find the the possible result is from -0.2 to 0.2. We can have a similair result that the median is close to 0
+To answer the question, we are trying to find the inverse of the probability function. Uniroot is a good expression to find the outcome. From the graph, we can find the the possible quantile result is from -0.2 to 0.2. The result is close to the find we have from CDF. We can have a similar result that the median is close to 0
 ```{r}
 ps <- seq(0.01, 0.99, by = 0.001)
 qs <- NA
@@ -69,7 +69,7 @@ plot(ps,qorder(ps),type = "l", main = "Quntile of the Normal Distribution For Th
 
 
 **Questions4:** Simulate the sampling distribution for the median. Create a plot of the empirical CDF (ECDF). Overlay the plot of the ECDF with a plot of the CDF.
-Here, we are trying to compare the simulated probability with theoretical probability. To simulate the the sampling distribution for the median, we set 10000 running times for the median. rnorm is a good function. From the plot, we are able to have a very close result. The median is close to 0.
+Here, we are trying to compare the simulated probability with theoretical probability. To simulate the the sampling distribution for the median, we set 10000 running times for the median. rnorm() is a good function to have the reustlt.Then we will use ecdf to have the CDF plot. From the plot, we are able to have a very close result. the simulation sample CDF is close to the estimated CDF. The median is close to 0. and the range is crom -0.2 to 0.2.
 ```{r}
 
 simulation.median<- NA
@@ -93,16 +93,16 @@ legend(
 
 **Questions5:**Using the simulated sampling distribution from the previous question, create a histogram (on the density scale). Overlay the histogram with a plot of the density function.
 
-Here, we are trying to compare the simulation density with theoretical density. We will use the simulation result from the previous questions. From the plot, we are able to have a very close result. The median is close to 0.
+Here, we are trying to compare the simulation density with theoretical density. We will use the simulation result from the previous questions. Hist() function helps us have the histogram graph. Here, we set the break as 100 for more detail. From the plot, The pdf has same tendency as the histgram has. The higest poist are close here. We are able to have a very close result. The median is close to 0 and the range is from -0.2 to 0.2.
 ```{r}
-hist(simulation.median,freq = F,main= "Histogram and Density of Simulated Sampling Distribution",xlab = parse(text="X[(100)]"))
+hist(simulation.median,freq = F,main= "Histogram and Density of Simulated Sampling Distribution",xlab = parse(text="X[(100)]"),breaks=100)
 curve(dorder(x), add = T)
 ```
 
 
 **Questions5:** One very common way to compare a random sample to a theoretical candidate distribution is the QQ plot. It is created by ploting quantiles of the theoretical distribution on the x-axis and empirical quantiles from the sample on the y-axis.For the assigment, generate a QQ plot for the simulated data of the median relative to the known sampling distribution of the median.Does the simulated data agree with the theoretical sampling distribution?
 
-To find the result, we need compare the simulation median and the theoretic order. We point have a large quantile sets here to improve the accuracy. From the result, we find that the simulated quantile result is same with the theoretical quantile result.
+To find the result, we need compare the simulation median and the theoretic order. We point have a large quantile sets here to improve the accuracy. From the result, we find that the simulated quantile result is same with the theoretical quantile result. the point is close to y=x. Thus, we could say that the theoretical quantile is same as the simulated quantile.
 
 ```{r}
 simulated_sample <- simulation.median
@@ -113,7 +113,7 @@ p <- ppoints(10000)
 x <- qorder(p)
 y <- quantile(simulated_sample, probs = p)
 
-plot(x,y,xlab = "Theoretical quantile", ylab = "Simultaed quantile")
+plot(x,y,xlab = "Theoretical quantile", ylab = "Simulated quantile")
 abline(0,1)
 
 ```
@@ -158,7 +158,8 @@ qorder <- function(p,k){
 
 **Questions7:** Generate the QQ plot for simulated data from the sampling distribution of the sample max and the theoretical largest order statistic distribution.
 
-The general idea of the QQ plot for sample max is similar with QQ plot for sample mean. To find the simulated max, we will use max() function. For the theoretical max, we look for 200 for k. The simulated max is same with the analytics max.
+The general idea of the QQ plot for sample max is similar with QQ plot for sample mean. To find the simulated max, we will use max() function. For the theoretical max, we look for 200 for k. From the result, we find that the simulated quantile result is same with the theoretical quantile result. the point is close to y=x. Thus, we could say that the theoretical quantile is same as the simulated quantile.
+
 ```{r}
 simulation.max <- NA   # distribution of medians of the M times of simulation
 
@@ -213,7 +214,7 @@ qorder <- function(p, k){
 
 **Questions7:**  Use the newly modified functions to plot the probability and density functions for the sample min (N = 200).
 
-Here, we try to find the density for sample min. Sample min here is 1. From the plot, we find the min is between -2 and -4
+Here, we try to find the density and dorder() for sample min. Sample min,k,here is 1. From the plot, we find the min is between -2 and -4
 ```{r}
 curve(dorder(x, k = 1, dist = "norm"), -5, 5, xlab = parse(text="X[(1)]"), ylab = "Density", main= "PDF of the Normal Distribution For Min")
 ```
