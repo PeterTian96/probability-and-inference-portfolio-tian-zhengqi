@@ -1,4 +1,4 @@
-ok---
+---
 title: "Writeup"
 author: "Zhengqi Tian"
 date: "10/20/2021"
