@@ -21,9 +21,9 @@ d1 <- nhgh %>%
   filter(1:n()<=1000)
 ```
 
-###a)Glycohemoglobin
-###Method of Moments (MM)
-##Normal Distribution
+### a)Glycohemoglobin
+### Method of Moments (MM)
+## Normal Distribution
 The first setp is to estimates the parameter. We can use mean function to find the mean of Glycohemoglobin, and sd function for the standard diviation of Glycohemoglobin.
 ```{r}
 gh<-d1$gh
@@ -34,14 +34,14 @@ mm.norm.mean
 mm.norm.sd
 ```
 
-#Overlay estimated pdf onto histogram
+## Overlay estimated pdf onto histogram
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dnorm() expression. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf does not match the histogram. From the graph, Estimated pdf also doesn’t match the pdf well.
 ```{r}
 # Overlay estimated pdf onto histogram
 hist(gh,main="Overlay Glycohemoglobin estimated pdf onto histogram",xlab="GH",breaks=100,freq=F)
 curve(dnorm(x, mm.norm.mean,mm.norm.sd),add=T,lwd=1)
 ```
-#Overlay estimated CDF onto eCDF
+## Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pnorm() expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph,the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is right of the eCDF. the estimated CDF does not match eCDF well. 
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -51,7 +51,7 @@ plot(ecdf(gh),main  = "Overlay Glycohemoglobin estimated CDF onto eCDF ",ylab="C
 curve(pnorm(x, mm.norm.mean,mm.norm.sd),add=TRUE,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
-#QQ plot (sample vs estimated distribution)
+# QQ plot (sample vs estimated distribution)
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qnorm() for the theoretical quantile.We can see here that the plotted points do not match the line y=x. The sample distribution does not match with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)
@@ -60,14 +60,14 @@ theore=qnorm(ppoints(1000),mm.norm.mean,mm.norm.sd)
 plot(theore,sample,main="QQ plot (sample vs estimated dist)(MM)",ylab="sample quantile",xlab="theoretical quantile")
 abline(0,1)
 ```
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qnorm() at 0.5.The result is 5.7246
 ```{r}
 # Estimated Median
 qnorm(.5,mm.norm.mean,mm.norm.sd)
 ```
 
-#Median Samp Distribution (hist)
+# Median Samp Distribution (hist)
 To generate a sample histogram, I use simulation method for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can  daw a histogram for the median sample distribution.
 ```{r}
 # simulation Sample
@@ -79,7 +79,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Distribution (hist)(MM)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
@@ -87,7 +87,7 @@ quantile(sample, c(0.05/2, 1 - 0.05/2))
 
 ```
 
-##Gamma Distribution
+## Gamma Distribution
 The first setp is to estimates the parameter. We can find the shape of Glycohemoglobin, and scale of Glycohemoglobin.
 ```{r}
 gh<-d1$gh
@@ -102,14 +102,14 @@ mm.gamma.scale
 
 ```
 
-#Overlay estimated pdf onto histogram
+# Overlay estimated pdf onto histogram
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dgamma() expression. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf does not match the histogram. From the graph, Estimated pdf also doesn’t match the pdf well.
 ```{r}
 # Overlay estimated pdf onto histogram
 hist(gh,main="Overlay Glycohemoglobin estimated pdf onto histogram",xlab="GH",breaks=100,freq=F)
 curve(dgamma(x,shape=mm.gamma.shape,scale=mm.gamma.scale),add=TRUE,lwd=1)
 ```
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pgamma() expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph,the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is right of the eCDF. the estimated CDF does not match eCDF well. 
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -119,7 +119,7 @@ plot(ecdf(gh),main  = "Overlay Glycohemoglobin estimated CDF onto eCDF ",ylab="C
 curve(pgamma(x,shape=mm.gamma.shape,scale=mm.gamma.scale),add=TRUE,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
-#QQ plot (sample vs estimated distribution)
+# QQ plot (sample vs estimated distribution)
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qgamma() for the theoretical quantile.We can see here that the plotted points do not match the line y=x. The sample distribution does not match with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)
@@ -128,14 +128,14 @@ theore=qgamma(ppoints(1000),shape=mm.gamma.shape,scale=mm.gamma.scale)
 plot(theore,sample,main="QQ plot (sample vs estimated dist)(MM)",ylab="sample quantile",xlab="theoretical quantile")
 abline(0,1)
 ```
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qgamma() at 0.5
 ```{r}
 # Estimated Median
 qgamma(0.5,shape=mm.gamma.shape,scale=mm.gamma.scale)
 ```
 
-#Median Samp Distribution (hist)
+# Median Samp Distribution (hist)
 To generate a sample histogram, I use simulation method for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can draw a histogram for the median sample distribution.
 ```{r}
 # simulation Sample
@@ -147,7 +147,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Distribution (hist)(MM)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
@@ -155,7 +155,7 @@ quantile(sample, c(0.05/2, 1 - 0.05/2))
 
 ```
 
-##Weibull Distribution
+## Weibull Distribution
 lambda and k are two parameters here. To find these parameters, we need have some functions first. First, we have the lambda function here. Based on the function $V[x]=(E[X]/\Gamma(1 + 1/k)^2 [\Gamma(1 + 2/k) - (\Gamma(1 + 1/k))^2]$, we can also have the variance function. To find the k, we need opytimize the function to find the minimum.
 ```{r}
 gh<-d1$gh
@@ -169,7 +169,7 @@ var_weib=function(k,samp_mean,samp_var){
 #optimization
 mm.opt <- optimize(f = function(x) {
     abs(var_weib(k = x, samp_mean = mean(gh),samp_var = var(gh)))
-    },  lower = 10, upper = 10000)
+    },  lower = 5, upper = 10000)
 
 #MM weibull k estimate
 weib.k <- mm.opt$minimum
@@ -179,14 +179,14 @@ weib.lambda <- lambda(samp_mean = mean(gh), k = weib.k)
 weib.lambda
 ```
 
-#Overlay estimated pdf onto histogram
+# Overlay estimated pdf onto histogram
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dweibull expression. The sahpe here equals weibull k, and the scale here is weibull.lambda. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf does not match the histogram. From the graph, Estimated pdf also doesn’t match the pdf well.
 ```{r}
 # Overlay estimated pdf onto histogram
 hist(gh,main="Overlay Glycohemoglobin estimated pdf onto histogram",xlab="GH",breaks=100,freq=F)
 curve(dweibull(x,shape=weib.k,scale=weib.lambda),add=TRUE,lwd=1)
 ```
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pweibull expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph,the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is right of the eCDF. the estimated CDF does not match eCDF well. 
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -196,7 +196,7 @@ plot(ecdf(gh),main  = "Overlay Glycohemoglobin estimated CDF onto eCDF ",ylab="C
 curve(pweibull(x,shape=weib.k,scale=weib.lambda),add=TRUE,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
-#QQ plot (sample vs estimated distribution)
+# QQ plot (sample vs estimated distribution)
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qweibull() for the theoretical quantile.We can see here that the plotted points do not match the line y=x. The sample distribution does not match with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)
@@ -205,14 +205,14 @@ theore=qweibull(ppoints(1000),shape=weib.k,scale=weib.lambda)
 plot(theore,sample,main="QQ plot (sample vs estimated dist)(MM)",ylab="sample quantile",xlab="theoretical quantile")
 abline(0,1)
 ```
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qweibull() at 0.5
 ```{r}
 # Estimated Median
 qweibull(0.5,shape=weib.k,scale=weib.lambda)
 ```
 
-#Median Samp Distribution (hist)
+# Median Samp Distribution (hist)
 To generate a sample histogram, I use simulation method for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can draw a histogram for the median sample distribution.
 ```{r}
 # simulation Sample
@@ -224,7 +224,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Distribution (hist)(MM)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
@@ -232,8 +232,8 @@ quantile(sample, c(0.05/2, 1 - 0.05/2))
 ```
 
 
-##Maximum likelihood (MLE)
-##Normal Distribution
+## Maximum likelihood (MLE)
+## Normal Distribution
 For performing MLE, a function has created for using the normal distribution and its parameters.
 ```{r}
 require(stats4)
@@ -254,13 +254,13 @@ gh.mle <- mle(
 )
 par(mfrow = c(1,2)); plot(profile(gh.mle), absVal = FALSE)
 ```
-#Estimates of parameters
+# Estimates of parameters
 We can use coef() function to find mean and sd here.
 ```{r}
 #Estimates of parameters
 coef(gh.mle)
 ```
-#Overlay estimated pdf onto histogram	
+# Overlay estimated pdf onto histogram	
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dnorm() expression. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf does not match the histogram. From the graph, Estimated pdf also doesn’t match the pdf well.Result is same with MM.
 ```{r}
 # Overlay estimated pdf onto histogram
@@ -268,7 +268,7 @@ hist(gh,main = "Overlay estimated pdf onto histogram (MLE)",col="white",xlab="GH
 curve(dnorm(x, coef(gh.mle)[1], coef(gh.mle)[2]), add = T)
 ```
 
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pnorm() expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph, hile, the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is right of the eCDF. the estimated CDF does not match eCDF well. Result is same with MM.
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -277,7 +277,7 @@ curve(pnorm(x, coef(gh.mle)[1], coef(gh.mle)[2]), add = T,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
 
-#QQ plot (sample vs estimated dist)	
+# QQ plot (sample vs estimated dist)	
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qnorm() for the theoretical quantile.We can see here that the plotted points do not match the line y=x. The sample distribution does not match with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)(mle)
@@ -288,14 +288,14 @@ abline(0,1)
 
 ```
 
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qnorm() at 0.5.The result is 5.724615
 ```{r}
 # Estimated Median
 qnorm(.5,mean = coef(gh.mle)[1],sd=coef(gh.mle)[2])
 ```
 
-#Median Samp Dist (hist)	
+# Median Samp Dist (hist)	
 To generate a sample histogram, I use simulation method for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can  daw a histogram for the median sample distribution.
 ```{r}
 # Median Samp Dist (hist)
@@ -307,7 +307,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Dist (hist)(MLE)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
@@ -315,7 +315,7 @@ quantile(sample, c(0.05/2, 1 - 0.05/2))
 
 ```
 
-##Gamma Distribution
+## Gamma Distribution
 For performing MLE, a function has created for using the normal distribution and its parameters.
 ```{r}
 require(stats4)
@@ -336,7 +336,7 @@ gh.mle <- mle(
 )
 par(mfrow = c(1,2)); plot(profile(gh.mle), absVal = FALSE)
 ```
-#Estimates of parameters
+# Estimates of parameters
 We can use coef() function to find shpe and scale here.
 ```{r}
 #Estimates of parameters
@@ -347,9 +347,9 @@ coef(gh.mle)
 
 
 
-###a)Height of adult females
-###Method of Moments (MM)
-##Normal Distribution
+### a)Height of adult females
+### Method of Moments (MM)
+## Normal Distribution
 The first setp is to estimates the parameter. We can use mean function to find the mean of Glycohemoglobin, and sd function for the standard diviation of Glycohemoglobin.
 ```{r}
 ht<-d1$ht
@@ -360,14 +360,14 @@ mm.norm.mean
 mm.norm.sd
 ```
 
-#Overlay estimated pdf onto histogram
+# Overlay estimated pdf onto histogram
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dnorm() expression. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf  match the histogram. From the graph, Estimated pdf matches the pdf well.
 ```{r}
 # Overlay estimated pdf onto histogram
 hist(ht,main="Overlay Height of adult females estimated pdf onto histogram",xlab="GH",breaks=100,freq=F)
 curve(dnorm(x, mm.norm.mean,mm.norm.sd),add=T,lwd=1)
 ```
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pnorm() expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph,the estimated CDF has a similar tendency with  eCDF, the red estimated CDF jut over the eCDF. the estimated CDF match with eCDF well. 
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -377,7 +377,7 @@ plot(ecdf(ht),main  = "Overlay Height of adult females estimated CDF onto eCDF "
 curve(pnorm(x, mm.norm.mean,mm.norm.sd),add=TRUE,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
-#QQ plot (sample vs estimated distribution)
+# QQ plot (sample vs estimated distribution)
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qnorm() for the theoretical quantile.We can see here that the plotted points match the line y=x. The sample distribution match with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)
@@ -386,14 +386,14 @@ theore=qnorm(ppoints(1000),mm.norm.mean,mm.norm.sd)
 plot(theore,sample,main="QQ plot (sample vs estimated dist)(MM)",ylab="sample quantile",xlab="theoretical quantile")
 abline(0,1)
 ```
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qnorm() at 0.5.
 ```{r}
 # Estimated Median
 qnorm(.5,mm.norm.mean,mm.norm.sd)
 ```
 
-#Median Samp Distribution (hist)
+# Median Samp Distribution (hist)
 To generate a sample histogram, I use simulation method for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can  daw a histogram for the median sample distribution.
 ```{r}
 # simulation Sample
@@ -405,7 +405,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Distribution (hist)(MM)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
@@ -413,7 +413,7 @@ quantile(sample, c(0.05/2, 1 - 0.05/2))
 
 ```
 
-##Gamma Distribution
+## Gamma Distribution
 The first setp is to estimates the parameter. We can find the shape of Glycohemoglobin, and scale of Glycohemoglobin.
 ```{r}
 ht<-d1$ht
@@ -428,14 +428,14 @@ mm.gamma.scale
 
 ```
 
-#Overlay estimated pdf onto histogram
+# Overlay estimated pdf onto histogram
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dgamma() expression. The estimated pdf has a similar tendency as the histogram has, and the highest point of the estimated pdf match the histogram. From the graph, Estimated pdf also match the pdf well.
 ```{r}
 # Overlay estimated pdf onto histogram
 hist(ht,main="Overlay Glycohemoglobin estimated pdf onto histogram",xlab="GH",breaks=100,freq=F)
 curve(dgamma(x,shape=mm.gamma.shape,scale=mm.gamma.scale),add=TRUE,lwd=1)
 ```
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pgamma() expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph,the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is over the eCDF. the estimated CDF match eCDF well. 
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -445,7 +445,7 @@ plot(ecdf(ht),main  = "Overlay Glycohemoglobin estimated CDF onto eCDF ",ylab="C
 curve(pgamma(x,shape=mm.gamma.shape,scale=mm.gamma.scale),add=TRUE,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
-#QQ plot (sample vs estimated distribution)
+# QQ plot (sample vs estimated distribution)
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qgamma() for the theoretical quantile.We can see here that the plotted points match the line y=x. The sample distribution match with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)
@@ -454,14 +454,14 @@ theore=qgamma(ppoints(1000),shape=mm.gamma.shape,scale=mm.gamma.scale)
 plot(theore,sample,main="QQ plot (sample vs estimated dist)(MM)",ylab="sample quantile",xlab="theoretical quantile")
 abline(0,1)
 ```
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qgamma() at 0.5
 ```{r}
 # Estimated Median
 qgamma(0.5,shape=mm.gamma.shape,scale=mm.gamma.scale)
 ```
 
-#Median Samp Distribution (hist)
+# Median Samp Distribution (hist)
 To generate a sample histogram, I use simulation method for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can draw a histogram for the median sample distribution.
 ```{r}
 # simulation Sample
@@ -473,14 +473,14 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Distribution (hist)(MM)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
 quantile(sample, c(0.05/2, 1 - 0.05/2))
 ```
 
-##Weibull Distribution
+## Weibull Distribution
 lambda and k are two parameters here. To find these parameters, we need have some functions first. First, we have the lambda function here. Based on the function $V[x]=(E[X]/\Gamma(1 + 1/k)^2 [\Gamma(1 + 2/k) - (\Gamma(1 + 1/k))^2]$, we can also have the variance function. To find the k, we need opytimize the function to find the minimum.
 ```{r}
 ht<-d1$ht
@@ -494,7 +494,7 @@ var_weib=function(k,samp_mean,samp_var){
 #optimization
 mm.opt <- optimize(f = function(x) {
     abs(var_weib(k = x, samp_mean = mean(ht),samp_var = var(ht)))
-    },  lower = 10, upper = 10000)
+    },  lower = 5, upper = 10000)
 
 #MM weibull k estimate
 weib.k <- mm.opt$minimum
@@ -504,14 +504,14 @@ weib.lambda <- lambda(samp_mean = mean(ht), k = weib.k)
 weib.lambda
 ```
 
-#Overlay estimated pdf onto histogram
+# Overlay estimated pdf onto histogram
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dweibull expression. The shape here equals weibull k, and the scale here is weibull.lambda. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf match the histogram. From the graph, Estimated pdf also generally match the pdf well.
 ```{r}
 # Overlay estimated pdf onto histogram
 hist(ht,main="Overlay Height of adult femalesestimated pdf onto histogram",xlab="HT",breaks=100,freq=F)
 curve(dweibull(x,shape=weib.k,scale=weib.lambda),add=TRUE,lwd=1)
 ```
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pweibull expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph,the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is just over the eCDF. the estimated CDF matches eCDF well. 
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -521,7 +521,7 @@ plot(ecdf(ht),main  = "Overlay Glycohemoglobin estimated CDF onto eCDF ",ylab="C
 curve(pweibull(x,shape=weib.k,scale=weib.lambda),add=TRUE,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
-#QQ plot (sample vs estimated distribution)
+# QQ plot (sample vs estimated distribution)
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qweibull() for the theoretical quantile.We can see here that the plotted points generally matches the line y=x. The sample distribution generally match with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)
@@ -530,14 +530,14 @@ theore=qweibull(ppoints(1000),shape=weib.k,scale=weib.lambda)
 plot(theore,sample,main="QQ plot (sample vs estimated dist)(MM)",ylab="sample quantile",xlab="theoretical quantile")
 abline(0,1)
 ```
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qweibull() at 0.5
 ```{r}
 # Estimated Median
 qweibull(0.5,shape=weib.k,scale=weib.lambda)
 ```
 
-#Median Samp Distribution (hist)
+# Median Samp Distribution (hist)
 To generate a sample histogram, I use simulation method for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can draw a histogram for the median sample distribution.
 ```{r}
 # simulation Sample
@@ -549,7 +549,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Distribution (hist)(MM)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
@@ -557,8 +557,8 @@ quantile(sample, c(0.05/2, 1 - 0.05/2))
 ```
 
 
-##Maximum likelihood (MLE)
-##Normal Distribution
+## Maximum likelihood (MLE)
+## Normal Distribution
 For performing MLE, a function has created for using the normal distribution and its parameters.
 ```{r}
 require(stats4)
@@ -579,13 +579,13 @@ ht.mle <- mle(
 )
 par(mfrow = c(1,2)); plot(profile(ht.mle), absVal = FALSE)
 ```
-#Estimates of parameters
+# Estimates of parameters
 We can use coef() function to find mean and sd here.
 ```{r}
 #Estimates of parameters
 coef(ht.mle)
 ```
-#Overlay estimated pdf onto histogram	
+# Overlay estimated pdf onto histogram	
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dnorm() expression. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf matches the histogram. From the graph, Estimated pdf also matches the pdf well.Result is same with MM.
 ```{r}
 # Overlay estimated pdf onto histogram
@@ -593,7 +593,7 @@ hist(ht,main = "Overlay estimated pdf onto histogram (MLE)",col="white",xlab="HT
 curve(dnorm(x, coef(ht.mle)[1], coef(ht.mle)[2]), add = T)
 ```
 
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pnorm() expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph, the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is over the eCDF. The estimated CDF matches eCDF well. Result is same with MM.
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -602,7 +602,7 @@ curve(pnorm(x, coef(ht.mle)[1], coef(ht.mle)[2]), add = T,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
 
-#QQ plot (sample vs estimated dist)	
+# QQ plot (sample vs estimated dist)	
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qnorm() for the theoretical quantile.We can see here that the plotted points matches the line y=x. The sample distribution matches with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)(mle)
@@ -613,14 +613,14 @@ abline(0,1)
 
 ```
 
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qnorm() at 0.5.
 ```{r}
 # Estimated Median
 qnorm(.5,mean = coef(ht.mle)[1],sd=coef(ht.mle)[2])
 ```
 
-#Median Samp Dist (hist)	
+# Median Samp Dist (hist)	
 To generate a sample histogram, I use simulation method for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can  daw a histogram for the median sample distribution.
 ```{r}
 # Median Samp Dist (hist)
@@ -632,7 +632,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Dist (hist)(MLE)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
@@ -640,7 +640,7 @@ quantile(sample, c(0.05/2, 1 - 0.05/2))
 
 ```
 
-##Gamma Distribution
+## Gamma Distribution
 For performing MLE, a function has created for using the normal distribution and its parameters.
 ```{r}
 require(stats4)
@@ -661,13 +661,13 @@ ht.mle <- mle(
 )
 par(mfrow = c(1,2)); plot(profile(ht.mle), absVal = FALSE)
 ```
-#Estimates of parameters
+# Estimates of parameters
 We can use coef() function to find shpe and scale here.
 ```{r}
 #Estimates of parameters
 coef(ht.mle)
 ```
-#Overlay estimated pdf onto histogram	
+# Overlay estimated pdf onto histogram	
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dgamma() expression. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf  matches the histogram. From the graph, Estimated pdf also matches the pdf well.Result is same with MM.
 ```{r}
 # Overlay estimated pdf onto histogram
@@ -675,7 +675,7 @@ hist(ht,main = "Overlay estimated pdf onto histogram (MLE)",col="white",xlab="HT
 curve(dgamma(x, shape=coef(ht.mle)[1], scale=coef(ht.mle)[2]), add = T)
 ```
 
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pgamma() expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph, the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is overthe eCDF. the estimated CDF matches eCDF well. Result is same with MM.
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -684,7 +684,7 @@ curve(pgamma(x, shape=coef(ht.mle)[1], scale=coef(ht.mle)[2]), add = T,col="red"
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
 
-#QQ plot (sample vs estimated dist)	
+# QQ plot (sample vs estimated dist)	
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qgamma() for the theoretical quantile.We can see here that the plotted points matches the line y=x. The sample distribution matches with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)(mle)
@@ -695,14 +695,14 @@ abline(0,1)
 
 ```
 
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qgamma() at 0.5.
 ```{r}
 # Estimated Median
 qgamma(.5,shape = coef(ht.mle)[1],scale=coef(ht.mle)[2])
 ```
 
-#Median Samp Dist (hist)	
+# Median Samp Dist (hist)	
 To generate a sample histogram, I use simulation method and rgamma() function for an outcome, which the sample size is 1000 and simulation times are 10000. hist() expression can  draw a histogram for the median sample distribution.
 ```{r}
 # Median Samp Dist (hist)
@@ -714,7 +714,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Dist (hist)(MLE)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
@@ -722,7 +722,7 @@ quantile(sample, c(0.05/2, 1 - 0.05/2))
 
 ```
 
-##Weibull Distribution
+## Weibull Distribution
 For performing MLE, a function has created for using the normal distribution and its parameters.
 ```{r}
 require(stats4)
@@ -743,13 +743,13 @@ ht.mle <- mle(
 )
 par(mfrow = c(1,2)); plot(profile(ht.mle), absVal = FALSE)
 ```
-#Estimates of parameters
+# Estimates of parameters
 We can use coef() function to find mean and sd here.
 ```{r}
 #Estimates of parameters
 coef(ht.mle)
 ```
-#Overlay estimated pdf onto histogram	
+# Overlay estimated pdf onto histogram	
 Now we will look for overlay estimated pdf onto histogram. hist() function can be used for histogram. For the estimated PDF, we use curve function based on dweibull() expression. While the estimated pdf has a similar tendency as the histogram has, the highest point of the estimated pdf matches the histogram. From the graph, Estimated pdf also matches the pdf well.Result is same with MM.
 ```{r}
 # Overlay estimated pdf onto histogram
@@ -757,7 +757,7 @@ hist(ht,main = "Overlay estimated pdf onto histogram (MLE)",col="white",xlab="HT
 curve(dweibull(x, shape=coef(ht.mle)[1], scale=coef(ht.mle)[2]), add = T)
 ```
 
-#Overlay estimated CDF onto eCDF
+# Overlay estimated CDF onto eCDF
 Now we are looking for the graph to overlay estimated CDF onto eCDF. For the estimated CDF, we use plot function based on pweibull expression, marked as red color. For eCDF, we use ecdf to reflect gh data in to the graph. From the graph, the estimated CDF has a similar tendency with  eCDF, the red estimated CDF is over the eCDF. the estimated CDF matchES eCDF well. Result is same with MM.
 ```{r}
 # Overlay estimated CDF onto eCDF
@@ -766,7 +766,7 @@ curve(pweibull(x, coef(ht.mle)[1], coef(ht.mle)[2]), add = T,col="red")
 legend("bottomright",c("eCDF","estimated CDF"), col = c("orange","red"), lwd=1)
 ```
 
-#QQ plot (sample vs estimated dist)	
+# QQ plot (sample vs estimated dist)	
 Now we are going to create a QQ plot.I use quantile()function for the sample quantile and qweibull() for the theoretical quantile.We can see here that the plotted points generally matches the line y=x. The sample distribution generally matches with the theoretical distribution.
 ```{r}
 # QQ plot (sample vs estimated dist)(mle)
@@ -777,14 +777,14 @@ abline(0,1)
 
 ```
 
-#Estimated Median
+# Estimated Median
 For the estimated median, we look for qweibull() at 0.5.
 ```{r}
 # Estimated Median
 qweibull(.5,shape = coef(ht.mle)[1],scale=coef(ht.mle)[2])
 ```
 
-#Median Samp Dist (hist)	
+# Median Samp Dist (hist)	
 To generate a sample histogram, I use simulation method and rweibull() function for an outcome, which the sample size is 1000 and simulation times are 10000.hist() expression can  daw a histogram for the median sample distribution.
 ```{r}
 # Median Samp Dist (hist)
@@ -796,7 +796,7 @@ sample <- apply(simulate.sample,1,median)
 hist(sample,xlab = "Median Sample",main="Median Samp Dist (hist)(MLE)",breaks = 100)
 ```
 
-#Range of middle 95% of Samp Dist
+# Range of middle 95% of Samp Dist
 The range of middle 95% of sample distribution will covered from 2.5% quantile to 97.5%. 
 ```{r}
 # Range of middle 95% of Sample Dist
