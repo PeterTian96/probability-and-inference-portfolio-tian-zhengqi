@@ -1,0 +1,113 @@
+---
+title: "Writeup"
+author: "Zhengqi Tian"
+date: "11/10/2021"
+output: html_document
+---
+```{r}
+library(tidyverse)
+```
+
+
+Step: Generate a single sample from a standard normal distribution of size N = 201. Explain to the reader how you use MLE to estimate the distribution.
+To solve the problem. The first step is to set a sample as a standard normal distribution of size N=2-1. We are able to use rnorm here to make the sample here. We also use set.seed() to fix the outcome.
+```{r}
+set.seed(22)
+sample=rnorm(201)
+```
+
+Here, we try to use the following expression to have an function for MLE. the library we will use will be stats4. With MLE, we are able to have the sample mean and sample standard deviations. Then, with the graph, we are able to have the histogram with density plot. Here, we can find that the mean is at the left of 0. 
+```{r}
+require(stats4)
+nLL <- function(mean, sd){
+  fs <- dnorm(
+        x = sample
+      , mean = mean
+      , sd = sd
+      , log = TRUE
+    ) 
+  -sum(fs)
+}
+
+#As the mean is 0 and standard diviation is 1
+sample.mle <- mle(
+    nLL
+  , start = list(mean = 0, sd = 1)
+  , method = "L-BFGS-B"
+)
+
+
+#Estimates of parameters
+sample.mean=coef(sample.mle)[1]
+sample.mean
+sample.sd=coef(sample.mle)[2]
+sample.sd
+hist(sample,main="sampling distribution of the median",xlab="Sample",breaks=20,freq=F)
+curve(dnorm(x, sample.mean, sample.sd), add = T)
+```
+
+Step: Show the reader how you approximate the sampling distribution of the median, conditional on the estimate of the distribution in the previous step.
+Here,we will use simulation method to find the sampling distribution of the meadian. from the previous exoression, we have mean and standard deviation. Here, as the distiontrbution is normal.rorom() is able to reflect the posibile median. We can simulte 1000 mean here. Here we can find the mean is close the left of 0.
+```{r}
+# Median Samp Dist (hist)
+medians <- NA
+for (i in 1:1000){
+  sample.med.dist <- rnorm(201, mean = sample.mean, 
+            sd = sample.sd)
+  medians[i] <- median(sample.med.dist)
+}
+
+hist(medians, breaks=100,freq=F, main = "Sampling Distribution of the Median", xlab = "Estimated Median")
+
+```
+
+Step: Describe how you calculate a 95% confidence interval from the approximated sampling distribution.
+As we havethe sample mean and sample standard divation, we can use qnorm() to find the estimetd median when quantile at 0.5. Additionally, we can use the qunantile()for 95% confidence interval.
+```{r}
+# Estimated Median
+qnorm(.5,mean=sample.mean,sd=sample.sd)
+
+# Range of middle 95% of Sample Dist
+quantile(medians, c(0.05/2, 1 - 0.05/2))
+```
+
+
+Step: Explain the concept of coverage probability. Explain your code for calculating the coverage probability.
+To calculate the coverage probability, we are going to look confidence interval at 95%. Here we try to setup several expression to find outcome of 5000 simulation for 201. the first thing is to generate data. As we we set N as 5000, we use rnorm() to generate 5000 normal distributed data. Second, we get setup function boot_ci to 95% confidence interval. In this function, we calculate median from generated data as default summary measure, and generate each confidenceinterval from sample medians. Then we calculate the percentage of if successfully covering the null value, and get coverage probability. 
+```{r}
+  generate_data <- function(N){
+    rnorm(N) 
+    }
+  boot_ci <- function(data, summary = "median"){
+    R <- 5000
+    sm <- get(summary)
+    sampdist <- rep(NA, R)
+    for(i in 1:R){
+      b <- sample(data, length(data), replace = TRUE)
+      sampdist[i] <- sm(b)
+    }
+    quantile(sampdist, c(0.025, 0.975))
+    }
+  capture_median <- function(ci){
+    1*(ci[1] < 0 & 0 < ci[2])
+  }
+
+```
+
+
+Step: Perform the simulation and report the results.
+With the function, we can have catch the mean from coverage probability. After 1000 simulation, we can have the mean.
+
+
+```{r}
+ci.contain=NA
+for(i in 1:1000){
+  ci.contain[i]=201 %>% generate_data %>% boot_ci %>% capture_median
+}
+mean(ci.contain)
+```
+
+
+Step: Describe how you might change the simulation to learn more about the operating characteristics of your chosen method for constructing the 95% confidence interval.
+
+There are several change here. From the previous method, the first is select N. here is N is 201. If we change the N, we will change the restult. Second, the simulation runing times affect the result. The more times run, the better outcome we will have. 
