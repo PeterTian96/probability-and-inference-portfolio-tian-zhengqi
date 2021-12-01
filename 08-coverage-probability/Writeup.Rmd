@@ -10,11 +10,11 @@ library(tidyverse)
 
 
 Step: Generate a single sample from a standard normal distribution of size N = 201. Explain to the reader how you use MLE to estimate the distribution.
-To solve the problem. The first step is to set a sample as a standard normal distribution of size N=2-1. We are able to use rnorm here to make the sample here. We also use set.seed() to fix the outcome.
+To solve the problem. The first step is to set a sample as a standard normal distribution of size N=2-1. We are able to use rnorm here to make the sample here. 
 ```{r}
-set.seed(22)
 sample=rnorm(201)
 ```
+
 
 Here, we try to use the following expression to have an function for MLE. the library we will use will be stats4. With MLE, we are able to have the sample mean and sample standard deviations. Then, with the graph, we are able to have the histogram with density plot. Here, we can find that the mean is at the left of 0. 
 ```{r}
@@ -28,12 +28,12 @@ nLL <- function(mean, sd){
     ) 
   -sum(fs)
 }
-
 #As the mean is 0 and standard diviation is 1
 sample.mle <- mle(
-    nLL
-  , start = list(mean = 0, sd = 1)
-  , method = "L-BFGS-B"
+    nLL,
+    start = list(mean = mean(sample), sd = sqrt(var(sample))),
+  method = "L-BFGS-B",
+  lower = c(0, 0.01)
 )
 
 
@@ -47,17 +47,12 @@ curve(dnorm(x, sample.mean, sample.sd), add = T)
 ```
 
 Step: Show the reader how you approximate the sampling distribution of the median, conditional on the estimate of the distribution in the previous step.
-Here,we will use simulation method to find the sampling distribution of the meadian. from the previous exoression, we have mean and standard deviation. Here, as the distiontrbution is normal.rorom() is able to reflect the posibile median. We can simulte 1000 mean here. Here we can find the mean is close the left of 0.
+Here, one easy one is to use B + Q method.
 ```{r}
 # Median Samp Dist (hist)
-medians <- NA
-for (i in 1:1000){
-  sample.med.dist <- rnorm(201, mean = sample.mean, 
-            sd = sample.sd)
-  medians[i] <- median(sample.med.dist)
-}
+medians <- rbeta(5000, 101, 101) %>% qnorm(mean = sample.mean, sd = sample.sd)
 
-hist(medians, breaks=100,freq=F, main = "Sampling Distribution of the Median", xlab = "Estimated Median")
+hist(medians, main = "Sampling Distribution of the Median", xlab = "Estimated Median")
 
 ```
 
@@ -73,26 +68,35 @@ quantile(medians, c(0.05/2, 1 - 0.05/2))
 
 
 Step: Explain the concept of coverage probability. Explain your code for calculating the coverage probability.
-To calculate the coverage probability, we are going to look confidence interval at 95%. Here we try to setup several expression to find outcome of 5000 simulation for 201. the first thing is to generate data. As we we set N as 5000, we use rnorm() to generate 5000 normal distributed data. Second, we get setup function boot_ci to 95% confidence interval. In this function, we calculate median from generated data as default summary measure, and generate each confidenceinterval from sample medians. Then we calculate the percentage of if successfully covering the null value, and get coverage probability. 
+To calculate the coverage probability, we are going to look confidence interval at 95%. Here we try to setup several expression to find outcome of 5000 simulation for 201. the first thing is to generate sample. As we we set N as 5000, we use rnorm() to generate 5000 normal distributed sample. Second, we get setup function boot_ci to 95% confidence interval. In this function, we calculate median from generated sample as default summary measure, and generate each confidenceinterval from sample medians. Then we calculate the percentage of if successfully covering the null value, and get coverage probability. 
 ```{r}
-  generate_data <- function(N){
-    rnorm(N) 
-    }
-  boot_ci <- function(data, summary = "median"){
-    R <- 5000
-    sm <- get(summary)
-    sampdist <- rep(NA, R)
-    for(i in 1:R){
-      b <- sample(data, length(data), replace = TRUE)
-      sampdist[i] <- sm(b)
-    }
-    quantile(sampdist, c(0.025, 0.975))
-    }
-  capture_median <- function(ci){
-    1*(ci[1] < 0 & 0 < ci[2])
+ gen.ci.med = function(N = 201) {
+  sample = rnorm(N)
+
+  normal.ll <- function(mean, sd){
+    fs <- dnorm(x = sample, mean = mean, sd = sd, log = TRUE)
+    -sum(fs)
   }
 
+  fit_norm <- mle(
+    normal.ll,
+    start = list(mean = mean(sample), sd = sqrt(var(sample))),
+    method = "L-BFGS-B",
+    lower = c(0, 0.01)
+  )
+  
+  mean = coef(fit_norm)[1]
+  sd = coef(fit_norm)[2]
+  
+  meds = rbeta(5000, 101, 101) %>% qnorm(mean = coef(fit_norm)[1], sd = coef(fit_norm)[2])
+  
+  ci = quantile(meds, c(0.025, 0.975))
+  return (ci[1] < 0 & ci[2] > 0)
+}
+
+
 ```
+
 
 
 Step: Perform the simulation and report the results.
@@ -100,10 +104,12 @@ With the function, we can have catch the mean from coverage probability. After 1
 
 
 ```{r}
-ci.contain=NA
-for(i in 1:1000){
-  ci.contain[i]=201 %>% generate_data %>% boot_ci %>% capture_median
+ci.contain = NA
+repeat_num = 1000
+for(i in 1:repeat_num){
+  ci.contain[i] = gen.ci.med()
 }
+
 mean(ci.contain)
 ```
 
