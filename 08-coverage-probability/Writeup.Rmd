@@ -47,7 +47,7 @@ curve(dnorm(x, sample.mean, sample.sd), add = T)
 ```
 
 Step: Show the reader how you approximate the sampling distribution of the median, conditional on the estimate of the distribution in the previous step.
-Here, one easy one is to use B + Q method.
+Here, one easy one is to use B + Q method to simulate the result.
 ```{r}
 # Median Samp Dist (hist)
 medians <- rbeta(5000, 101, 101) %>% qnorm(mean = sample.mean, sd = sample.sd)
@@ -73,13 +73,13 @@ To calculate the coverage probability, we are going to look confidence interval 
  gen.ci.med = function(N = 201) {
   sample = rnorm(N)
 
-  normal.ll <- function(mean, sd){
+    nLL <- function(mean, sd){
     fs <- dnorm(x = sample, mean = mean, sd = sd, log = TRUE)
     -sum(fs)
   }
 
   fit_norm <- mle(
-    normal.ll,
+    nLL,
     start = list(mean = mean(sample), sd = sqrt(var(sample))),
     method = "L-BFGS-B",
     lower = c(0, 0.01)
@@ -100,10 +100,10 @@ To calculate the coverage probability, we are going to look confidence interval 
 
 
 Step: Perform the simulation and report the results.
-With the function, we can have catch the mean from coverage probability. After 1000 simulation, we can have the mean.
+With the function, we can have catch the mean from coverage probability. After 1000 simulation, we can have the mean. We can find the result is over 0.95, which means that for 1000 invertal here, there are over 950 interval meet the confident interval in 95%.
 
 
-```{r}
+```{r warning=FALSE}
 ci.contain = NA
 repeat_num = 1000
 for(i in 1:repeat_num){
