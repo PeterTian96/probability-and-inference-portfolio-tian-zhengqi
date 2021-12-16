@@ -47,7 +47,7 @@ Consider two strategies:
 
 Use the `game` function to estimate the **probability that both strategies result in a goat**. Let **N=4**.
 
-```{r, eval = FALSE}
+```{r}
 require(magrittr)
 require(dplyr)
 
@@ -75,13 +75,11 @@ game <- function(N){
   c(game$prize[game$first_guess == 1], game$prize[game$switch == 1])
 }
 ```
-```{r}
-game(4)
-```
+
 
 
 ```{r}
-
+set.seed(1)
 outcome <- rep(NA, 1000)
 for(i in 1:1000){
   result <- game(4)
@@ -109,10 +107,6 @@ $$
 D(N) = P(\text{win strategy 2}|\text{N doors}) - P(\text{win strategy 1}|\text{N doors})
 $$
 Create a plot that shows how D changes as N increases.  Put N on the x-asis, ranging from 3 to 10.  Put D on the y-axis.
-```{r}
-rep(NA, 10-3)
-```
-
 
 ```{r}
 set.seed(1)
@@ -136,7 +130,6 @@ for(k in 1:8){
   prob_difference[k]=mean(s2_outcome)-mean(s1_outcome)
   }
 
-
 prob_difference
 ```
 
@@ -159,7 +152,7 @@ Consider a test for a rare genetic condition.  Let T+ denote a test result that 
 |:---:|:---:|:---:|:---:|
 | T+  | 0.00085 | 0.04995 |  0.0508 |
 | T-  | 0.00015 | 0.94905 |  0.9492 |
-|     | 0.001    |  0.999  |    1    |
+|     | 0.001    |  0.999  |    1   |
 
 
 
@@ -219,12 +212,15 @@ plot(density(out))
 
 **A**.  What is the probability that a randomly selected class of size 30 students will have less than 10 students with zero yearly hospital charges?
 ```{r}
+#r
 pbinom(9, 30, 0.5)
 ```
 
 ```{r}
-num=rep(NA,1e5)
-for( i in (1:1e5)){
+#simulation
+set.seed(1)
+num=rep(NA,10000)
+for( i in (1:10000)){
   group <- rbinom(30, 1, 0.5)
   if (sum(group)<10){
     num[i]<-1
@@ -235,6 +231,7 @@ for( i in (1:1e5)){
 }
 mean(num)
 ```
+
 
 
 
@@ -271,7 +268,7 @@ P_male/(P_male+P_female)
 
 ```{r}
 femur_length <- 25:50
-prob_male <- (dnorm(femor_length,40,3.4)) /((dnorm(femor_length,40,3.4)) + (dnorm(femor_length,36,3.3)))
+prob_male <- (dnorm(femur_length,40,3.4))*0.5 /((dnorm(femur_length,40,3.4)*0.5) + (dnorm(femur_length,36,3.3))*0.5)
 plot.new()
 plot.window(xlim = c(25,50), ylim = c(0,1))
 lines(femur_length, prob_male)
@@ -294,10 +291,16 @@ hospital_charges <- function(N){
   charges
 }
 ```
+```{r}
+hospital_charges(100)
+```
 
 **C.** What is E[yearly hospital charges]?
 ```{r}
-mean(hospital_charges(1000000))
+#r
+mean(hospital_charges(10000))
+#by hand
+0.5*0+0.5*2*2
 ```
 
 
@@ -334,23 +337,24 @@ Log normal data are prevalent is biological systems and econometrics.
 
 Suppose a blood chemistry measure has a log normal distribution with $\mu$ = 0 and $\sigma$ = 1. Generate an histogram or density curve for the sampling distribution of the median when the sample size is 101.
 ```{r}
+#use mean
 set.seed(1)
-meds <- rep(NA,1000)
+medians <- rep(NA,1000)
 for (i in seq(1:1000)){
-  meds[i] <- median(rlnorm(101,0,1))
+  medians[i] <- median(rlnorm(101,0,1))
 }
-hist(meds, breaks = 50)
-plot(density(meds))
+hist(medians, breaks = 50)
+plot(density(medians))
 ```
 ```{r}
+#quantile=0.5
 set.seed(1)
-meds_out <- rep(NA,1000)
+medians <- rep(NA,1000)
 for (i in seq(1:1000)){
-  meds<- (rlnorm(101,0,1))
-  meds_out[i]<-quantile(meds,0.5)
+  medians[i]<-quantile(rlnorm(101,0,1),0.5)
 }
-hist(meds_out, breaks = 50)
-plot(density(meds_out))
+hist(medians, breaks = 50)
+plot(density(medians))
 ```
 
 
@@ -363,8 +367,9 @@ Fk <- function(x,k,n){
 }
 ```
 ```{r}
-plot(ecdf(meds), col = "red")
+plot(ecdf(medians), col = "red")
 curve(Fk(x, 51, 101), add =T, col = "green")
+legend("topleft", c("ECDF","CDF"),col = c("red","green"),lwd= 1)
 ```
 
 
@@ -376,14 +381,15 @@ out_75 <- NA
 
 for (i in 1:1000){
   out_25[i] <- quantile(rlnorm(101,0,1), 0.25)
+} 
+ for (i in 1:1000){
   out_50[i] <- quantile(rlnorm(101,0,1), 0.5)
+ } 
+  for (i in 1:1000){
   out_75[i] <- quantile(rlnorm(101,0,1), 0.75)
-}
+ } 
 
- 
-```
 
-```{r}
 out_25_95 <- quantile(out_25, 0.975)-quantile(out_25, 0.025)
 out_25_95
 out_50_95 <- quantile(out_50, 0.975)-quantile(out_50, 0.025)
@@ -444,7 +450,7 @@ female_adult_bmi <-  d1 %>% filter(age > 18 , sex == "female") %>% select(bmi)%>
 mm_shape_gamma=mean(female_adult_bmi)^2/var(female_adult_bmi)
 mm_scale_gamma=var(female_adult_bmi)/mean(female_adult_bmi)
 
-hist(female_adult_bmi,breaks=20,freq = F,xlim = c(0, 100))
+hist(female_adult_bmi,breaks=10,freq = F,xlim = c(0, 100))
 curve(dgamma(x,shape=mm_shape_gamma,scale=mm_scale_gamma),add=T)
 ```
 
@@ -481,30 +487,6 @@ quantile(out, c(0.025, 0.975))
 ```{r}
 #data
 bwt_smoke <- bwt %>% filter(smoke == 1) %>% select(bwt)%>%pull(bwt)
-
-#smokers estimates
-mean_mle_smoke <- mean(bwt_s, na.rm = TRUE)
-sd_mle_smoke <- sd(bwt_s, na.rm = TRUE)
-
-#num replicates
-mean_sample_smoke <- rep(NA, 1000)
-for(i in 1:1000){
-  sample_smoke <- rnorm(length(bwt_s), mean = mean_mle_smoke, sd = sd_mle_smoke)
-  mean_sample_smoke[i] <- mean(sample_smoke)
-}
-conf <- quantile(mean_sample_smoke, c(0.025, 0.975))
-conf
-```
-
-
-
-
-
-
-**A.** Let $\mu_s$ be the mean birthweight of infants whose mothers smoked during pregnancy.  Let $\mu_{ns}$ be the mean for the non-smoking group.  Use simulation to calculate the 95% confidence interval for $\mu_s/\mu_{ns}$.
-```{r}
-#data
-bwt_smoke <- bwt %>% filter(smoke == 1) %>% select(bwt)%>%pull(bwt)
 #Without Short Cut
 R <- 2000
 means <- rep(NA, R)
@@ -515,12 +497,30 @@ for(i in 1:R){
   s <- rnorm(length(bwt_smoke), mean = mean_mle, sd = sd_mle)
   means[i] <- mean(s)
 }
-alpha <- 0.05
-quantile(means, c(alpha/2, 1-alpha/2))
+quantile(means, c(0.025, 0.975))
 ```
 
 ```{r}
 t.test(bwt_smoke)
+```
+
+
+**A.** Let $\mu_s$ be the mean birthweight of infants whose mothers smoked during pregnancy.  Let $\mu_{ns}$ be the mean for the non-smoking group.  Use simulation to calculate the 95% confidence interval for $\mu_s/\mu_{ns}$.
+
+
+```{r}
+set.seed(1)
+bwt_nosmoke <-  bwt %>% filter(smoke == 0) %>% select(bwt) %>% pull(bwt)
+bwt_smoke <-  bwt %>% filter(smoke == 1) %>% select(bwt) %>% pull(bwt)
+out <- rep(NA, 1000)
+out_smoke <- NA
+out_nosmoke <- NA
+for (i in 1:1000){
+  out_smoke[i] <- mean(sample(bwt_smoke, length(bwt_smoke), replace = T) )
+  out_nosmoke[i] <- mean(sample(bwt_nosmoke, length(bwt_nosmoke), replace = T))
+  out[i] <- out_smoke[i]/out_nosmoke[i]
+}
+quantile(out, c(0.05/2, 1-0.05/2))
 ```
 
 
