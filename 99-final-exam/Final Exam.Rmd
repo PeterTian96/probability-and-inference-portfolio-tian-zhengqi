@@ -80,8 +80,8 @@ game <- function(N){
 
 ```{r}
 set.seed(1)
-outcome <- rep(NA, 10000)
-for(i in 1:10000){
+outcome <- rep(NA, 1000)
+for(i in 1:1000){
   result <- game(4)
   if(result[1] == "goat" & result[2] == "goat" ){
     outcome[i] <- 1
@@ -97,7 +97,7 @@ Here we set a simulation for 1000 test, the probability that both strategies res
 
 
 ```{r}
-prop.test(sum(outcome), 10000, conf.level = 0.99)
+prop.test(sum(outcome), 1000, conf.level = 0.99)
 ```
 
 
