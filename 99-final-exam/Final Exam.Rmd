@@ -377,37 +377,37 @@ legend("topleft", c("ECDF","CDF"),col = c("red","green"),lwd= 1)
 
 **A.** Of the 25th, 50th, and 75th quantiles of the distribution from **B**, which will have the tightest 95% CI?  (Show the sampling distribution of each.)
 ```{r}
-out_25 <- NA
-out_50 <- NA
-out_75 <- NA
+order_25 <- NA
+order_50 <- NA
+order_75 <- NA
 
 for (i in 1:1000){
-  out_25[i] <- quantile(rlnorm(101,0,1), 0.25)
+  order_25[i] <- quantile(rlnorm(101,0,1), 0.25)
 } 
  for (i in 1:1000){
-  out_50[i] <- quantile(rlnorm(101,0,1), 0.5)
+  order_50[i] <- quantile(rlnorm(101,0,1), 0.5)
  } 
   for (i in 1:1000){
-  out_75[i] <- quantile(rlnorm(101,0,1), 0.75)
+  order_75[i] <- quantile(rlnorm(101,0,1), 0.75)
  } 
 
 
-out_25_95 <- quantile(out_25, 0.975)-quantile(out_25, 0.025)
-out_25_95
-out_50_95 <- quantile(out_50, 0.975)-quantile(out_50, 0.025)
-out_50_95
-out_75_95<- quantile(out_75,0.975)-quantile(out_75, 0.025)
-out_75_95
+order_25_95 <- quantile(order_25, 0.975)-quantile(order_25, 0.025)
+order_25_95
+order_50_95 <- quantile(order_50, 0.975)-quantile(order_50, 0.025)
+order_50_95
+order_75_95<- quantile(order_75,0.975)-quantile(order_75, 0.025)
+order_75_95
 
-min(out_25_95,out_50_95,out_75_95)
+min(order_25_95,order_50_95,order_75_95)
 ```
 
 
 
 ```{r}
-plot(density(out_25), col = "red", xlim = c(0, 4),  main = "Distribution of 25th, 50th, 75th quantiles",xlab = "x")
-lines(density(out_50), col = "green")
-lines(density(out_75), col = "blue")
+plot(density(order_25), col = "red", xlim = c(0, 4),  main = "Distribution of 25th, 50th, 75th quantiles",xlab = "x")
+lines(density(order_50), col = "green")
+lines(density(order_75), col = "blue")
 legend("topright", c("25th","50th", "75th"),col = c("red","green", "blue"),lwd= 1)
 ```
 
@@ -422,10 +422,6 @@ d1 <- nhgh[1:500,]
 
 **C.** Estimate the distribution of standing height for adult (age > 18) males using the MLE method with a normal distribution.  Create a plot of the estimated density function.
 ```{r}
-library(stats4)
-library(tidyr)
-library(magrittr)
-library(dplyr)
 ht <-  d1 %>% filter(age > 18 , sex == "male") %>% select(ht)%>% pull(ht)
 
 mean_mle=mean(ht)
