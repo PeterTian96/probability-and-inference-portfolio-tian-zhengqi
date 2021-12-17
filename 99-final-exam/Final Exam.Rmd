@@ -80,8 +80,8 @@ game <- function(N){
 
 ```{r}
 set.seed(1)
-outcome <- rep(NA, 1000)
-for(i in 1:1000){
+outcome <- rep(NA, 10000)
+for(i in 1:10000){
   result <- game(4)
   if(result[1] == "goat" & result[2] == "goat" ){
     outcome[i] <- 1
@@ -95,8 +95,9 @@ Here we set a simulation for 1000 test, the probability that both strategies res
 
 **B**. Communicate the precision of your simulated probability in part **C** by calculating a **99\%** confidence interval.
 
+
 ```{r}
-prop.test(sum(outcome), 1000, conf.level = 0.99)
+prop.test(sum(outcome), 10000, conf.level = 0.99)
 ```
 
 
@@ -134,7 +135,10 @@ prob_difference
 ```
 
 ```{r}
-plot((3:10),prob_difference,type="b")
+plot((3:10),prob_difference,type="b",
+     xlab='Number of Game Door',
+     ylab='difference in probabilities between strategy 2 and strategy 1',
+     main="difference in probabilities between strategy 2 and strategy 1 for Door from 3 to 10")
 ```
 
 
@@ -150,7 +154,7 @@ Consider a test for a rare genetic condition.  Let T+ denote a test result that 
 
 |     | D+ | D- |   |
 |:---:|:---:|:---:|:---:|
-| T+  | 0.00085 | 0.04995 |  0.0508 |
+| T+  |dd 0.00085 | 0.04995 |  0.0508 |
 | T-  | 0.00015 | 0.94905 |  0.9492 |
 |     | 0.001    |  0.999  |    1   |
 
@@ -189,6 +193,7 @@ hospital_charges <- function(N){
 
 **C**.  What is the 90th percentile for yearly hospital charges for a randomly selected Vanderbilt student?
 ```{r}
+set.seed(10086)
 out <- rep(NA, 1000)
 for(i in 1:1000){
   result <- hospital_charges(40000)
@@ -200,6 +205,7 @@ mean(out)
 
 **B**.  Consider the **class** average yearly hospital charge for the students in a class of size 30.  Plot the density function or a simulated histogram of the class average yearly hospital charge.
 ```{r}
+set.seed(3)
 out <- rep(NA, 1000)
 for(i in 1:1000){
   result <- hospital_charges(30)
@@ -291,16 +297,12 @@ hospital_charges <- function(N){
   charges
 }
 ```
-```{r}
-hospital_charges(100)
-```
 
 **C.** What is E[yearly hospital charges]?
 ```{r}
-#r
 mean(hospital_charges(10000))
-#by hand
-0.5*0+0.5*2*2
+
+
 ```
 
 
@@ -400,6 +402,8 @@ out_75_95
 min(out_25_95,out_50_95,out_75_95)
 ```
 
+
+
 ```{r}
 plot(density(out_25), col = "red", xlim = c(0, 4),  main = "Distribution of 25th, 50th, 75th quantiles",xlab = "x")
 lines(density(out_50), col = "green")
@@ -424,41 +428,30 @@ library(magrittr)
 library(dplyr)
 ht <-  d1 %>% filter(age > 18 , sex == "male") %>% select(ht)%>% pull(ht)
 
-nLL <- function(mean, sd){
-  fs <- dnorm(
-    x = d1$ht
-    ,mean = mean
-    ,sd = sd
-    ,log = TRUE
-  )
-  -sum(fs)
-}
-
-fit <- mle(
-  nLL
-  ,start = list(mean = mean(ht), sd = sd(ht))
-  ,method = "L-BFGS-B"
-  ,lower = c(0,0.01)
-)
+mean_mle=mean(ht)
+sd_mle=sd(ht)
 hist(ht, freq=F,breaks = 20,xlab = "male adult height",xlim = c(130, 200))
-curve(dnorm(x, mean = coef(fit)[1],sd =coef(fit)[2]),add=T)
+curve(dnorm(x, mean =mean_mle,sd =sd_mle),col='red',add=T)
 ```
+
+
 **B.** Estimate the distribution of BMI for adult (age > 18) females using using the method of moment method with the gamma distribution. Create a plot of the estimated density function.
 ```{r}
 female_adult_bmi <-  d1 %>% filter(age > 18 , sex == "female") %>% select(bmi)%>% pull(bmi)
 
-mm_shape_gamma=mean(female_adult_bmi)^2/var(female_adult_bmi)
-mm_scale_gamma=var(female_adult_bmi)/mean(female_adult_bmi)
+mm_shape=mean(female_adult_bmi)^2/var(female_adult_bmi)
+mm_scale=var(female_adult_bmi)/mean(female_adult_bmi)
 
 hist(female_adult_bmi,breaks=10,freq = F,xlim = c(0, 100))
-curve(dgamma(x,shape=mm_shape_gamma,scale=mm_scale_gamma),add=T)
+curve(dgamma(x,shape=mm_shape,scale=mm_scale),col='red',add=T)
 ```
 
 **A.** Estimate the distribution of creatinine (SCr) for adults (age > 18) using the kernel density method with a Gaussian kernel.  Create a plot of the estimated density function.
 ```{r}
-adult_SCr <-  d1 %>% filter(age > 18 ) %>% select(SCr) %>% na.omit%>% pull(SCr)
-plot(density(adult_SCr,kernal= "gaussian"))
+adult_SCr <-  d1 %>% filter(age > 18) %>% select(SCr) %>% na.omit%>% pull(SCr)
+plot(density(adult_SCr,kernal= "gaussian"), main="Distribution of creatinine (SCr)",xlab='Adult creatinine (SCr)')
 ```
+
 
 
 # 8. Sample from an estimated distribution
@@ -477,7 +470,6 @@ out <- rep(NA, 10000)
 for (i in 1:10000){
   out[i] <- mean(sample(bwt_smoke, length(bwt_smoke), replace = T))
 }
-
 quantile(out, c(0.025, 0.975))
 ```
 
@@ -499,10 +491,20 @@ for(i in 1:R){
 }
 quantile(means, c(0.025, 0.975))
 ```
+```{r}
+length(bwt_smoke)
+```
 
 ```{r}
 t.test(bwt_smoke)
 ```
+```{r}
+#devtools::install_github('alanarnholt/BSDA')
+#install.packages('BSDA')
+library(BSDA)
+z.test(bwt_smoke, sigma.x=sd(bwt_smoke))
+```
+
 
 
 **A.** Let $\mu_s$ be the mean birthweight of infants whose mothers smoked during pregnancy.  Let $\mu_{ns}$ be the mean for the non-smoking group.  Use simulation to calculate the 95% confidence interval for $\mu_s/\mu_{ns}$.
@@ -545,11 +547,11 @@ prop.test(c(600, 619), c(2000, 2000))
 
 p = 0.5459 in the first study and  p = 0.5364 in the second one. We can find that in both study, 0 is included in the 95% CI. 
 
-**Generally, we have a similar conclusion for both study.  we cannot reject the null assumption because p > 0.05 in both studies. As,  0 is in both 95% CI, we cannot reject H0 as well.**
+**Generally, we have a similar conclusion for both study.  we cannot reject the null assumption because p > 0.05 in both studies. As,  0 is in both 95% CI, we fail to reject H0 as well.We should know both here are inclusive results. 0 is null point here. **
 
 **B.** Suppose that prior to the studies, the researchers established an equivalence threshold of 6 percentage points.  Using the confidence intervals, which studies (if any) showed a conclusive similarity between surgical approaches for the complication rate.  Explain why.
 
-## For the first study, the 95 CI is from -0.18963943 to 0.08963943, which is not in the range of -0.06 to 0.06. Thus, the first study does not show a conclusive simiarity here. However, for second study, the 95 CI is from -0.03852774  0.01952774, which is in the range of -0.06 to 0.06. Study two showed a conclusive similarity between surgical approaches for the complication rate.
+## For the first study, the 95 CI is from -0.18963943 to 0.08963943, which is not in the range of -0.06 to 0.06. Thus, the first study does not show a conclusive simiarity here. When can find inclusive result here. Thus, weh cannot reject H0. However, for second study, the 95 CI is from -0.03852774  0.01952774, which is in the range of -0.06 to 0.06. Study two showed a conclusive similarity between surgical approaches for the complication rate, which means that we can accept H0.
 
 
 **A.** If the data from the studies were combined, what is the smallest equivalence threshold that would identify a conclusive similarity between the surgical approaches?
@@ -566,10 +568,12 @@ prop.test(c(630, 654), c(2100, 2100))
 **B.** Explain why predictions from a conditional distribution generally have smaller prediction error than predictions from the marginal distribution.
 
 
-##  The conditional distribution will be more tighter than a marginal distribution. It means that the variance of conditional ditribution will smaller than variance of the marginal distribution. Small variance mean small preidction. For marginal distribution, its variance eaquals to conditioal distirbution's variance add other variance. 
+##  The conditional distribution will be more tighter than a marginal distribution. It means that the variance of conditional ditribution will smaller than variance of the marginal distribution. Small variance mean small preidction. Addtionally, conditional will have more infomration. more infomration means less variance and less error. For marginal distribution, its variance eaquals to conditioal distirbution's variance add other variance. 
 
 **A.** Use the CLT shortcut to calculate the 95% confidence interval for the correlation of arm circumference and arm length using the NHANES dataset.  Is the sample correlation a reasonable measure of association for this data?
 ```{r}
+set.seed(1)
 cor.test(nhgh$armc, nhgh$arml)
 
 ```
+#Here we can find that the pvlaue is vert small. As the null hypothese here is tha two variables does not have correlation, and we can reject it. Here the 95 CI has correlation from 0.4811147 0.5173282 also clear that the correlation is avaliable. If we implment null point here, we can have conclusive difference, which can reject the null hypothesis. 
